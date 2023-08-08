@@ -15,3 +15,9 @@ artifacts-zk
 cache-zk
 
 deployments
+
+#Foundry files
+cache_forge/
+out/
+lcov.info
+cache/
