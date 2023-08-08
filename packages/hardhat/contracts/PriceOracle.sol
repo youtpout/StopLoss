@@ -4,8 +4,9 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "./interfaces/IPriceOracle.sol";
 
-contract PriceOracle is Initializable, AccessControlUpgradeable {
+contract PriceOracle is Initializable, AccessControlUpgradeable, IPriceOracle {
 	bytes32 public constant CONTROLLER_ROLE = keccak256("CONTROLLER_ROLE");
 
 	mapping(address => AggregatorV3Interface) public dataFeeds;
