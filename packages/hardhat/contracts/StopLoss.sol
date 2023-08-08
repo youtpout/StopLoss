@@ -8,13 +8,7 @@ import "./interfaces/IPriceOracle.sol";
 contract StopLoss is Initializable, AccessControlUpgradeable {
 	bytes32 public constant CONTROLLER_ROLE = keccak256("CONTROLLER_ROLE");
 
-	enum OrderType {
-		None,
-		Market,
-		Limit,
-		StopLoss,
-		TrailingStop
-	}
+	uint256 public constant PERCENT_DIVISOR = 10000;
 
 	enum OrderStatus {
 		None,
@@ -23,19 +17,29 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		Executed
 	}
 
+	enum OrderType {
+		None,
+		Market,
+		Limit,
+		StopLoss,
+		TrailingStop
+	}
+
 	struct Order {
 		OrderStatus orderStatus;
 		OrderType orderType;
 		address buyer;
+		uint16 triggerPercent;
 		uint128 sellAmount;
-    	uint128 buyAmount;
-    	uint128 sellToComplete;
-    	uint128 buyToComplete;
-	}	
+		uint128 buyAmount;
+		uint128 sellToComplete;
+		uint128 buyToComplete;
+	}
 
 	IPriceOracle public priceOracle;
 
-  	mapping(address => mapping(address => mapping (uint256 => Order))) public orders;
+	// sell token, buy token, orders
+	mapping(address => mapping(address => Order[])) public orders;
 
 	error NotAContract();
 
@@ -54,13 +58,35 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 
 	function updatePriceOracle(
 		address _priceOracle
-	) external initializer onlyRole(CONTROLLER_ROLE) {
+	) external onlyRole(CONTROLLER_ROLE) {
 		if (!_isContract(_priceOracle)) {
 			revert NotAContract();
 		}
 
 		priceOracle = IPriceOracle(_priceOracle);
 	}
+
+	function addStopLoss(
+		address sellToken,
+		address buyToken,
+		uint128 sellAmount,
+		uint128 buyAmount,
+		uint16 triggerPercent
+	) external {
+		Order memory order = Order(
+			OrderStatus.Active,
+			OrderType.StopLoss,
+			msg.sender,
+			triggerPercent,
+			sellAmount,
+			buyAmount,
+			sellAmount,
+			buyAmount
+		);
+
+		orders[sellToken][buyToken].push(order);
+	}
+
 
 	function _isContract(address addr) private view returns (bool) {
 		uint256 size;
