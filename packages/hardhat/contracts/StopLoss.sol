@@ -16,7 +16,26 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		TrailingStop
 	}
 
+	enum OrderStatus {
+		None,
+		Active,
+		Canceled,
+		Executed
+	}
+
+	struct Order {
+		OrderStatus orderStatus;
+		OrderType orderType;
+		address buyer;
+		uint128 sellAmount;
+    	uint128 buyAmount;
+    	uint128 sellToComplete;
+    	uint128 buyToComplete;
+	}	
+
 	IPriceOracle public priceOracle;
+
+  	mapping(address => mapping(address => mapping (uint256 => Order))) public orders;
 
 	error NotAContract();
 
