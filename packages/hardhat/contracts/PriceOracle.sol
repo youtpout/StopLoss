@@ -58,6 +58,10 @@ contract PriceOracle is Initializable, AccessControlUpgradeable, IPriceOracle {
 		price = (uint256(answer) * 10 ** decimalsTo) / uint256(answerTo);
 	}
 
+	function exist(address token) external view returns (bool) {
+		return address(dataFeeds[token]) != address(0);
+	}
+
 	function _isContract(address addr) private view returns (bool) {
 		uint256 size;
 		assembly {

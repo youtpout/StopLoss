@@ -4,6 +4,8 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "./interfaces/IPriceOracle.sol";
+import "./interfaces/IERC20.sol";
+import "./libraries/TransferHelper.sol";
 
 contract StopLoss is Initializable, AccessControlUpgradeable {
 	bytes32 public constant CONTROLLER_ROLE = keccak256("CONTROLLER_ROLE");
@@ -37,11 +39,15 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 	}
 
 	IPriceOracle public priceOracle;
+	uint256 public stopLossMinimal;
 
 	// sell token, buy token, orders
 	mapping(address => mapping(address => Order[])) public orders;
 
 	error NotAContract();
+	error IncompatibleToken();
+	error OrderNotActive();
+	error TriggerToHigh();
 
 	function initialize(address _priceOracle) public initializer {
 		if (!_isContract(_priceOracle)) {
@@ -54,6 +60,7 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		_grantRole(CONTROLLER_ROLE, msg.sender);
 
 		priceOracle = IPriceOracle(_priceOracle);
+		stopLossMinimal = 100; // 1% due to price oracle deviation
 	}
 
 	function updatePriceOracle(
@@ -73,6 +80,21 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		uint128 buyAmount,
 		uint16 triggerPercent
 	) external {
+		if (!priceOracle.exist(sellToken) || !priceOracle.exist(buyToken)) {
+			revert IncompatibleToken();
+		}
+
+		if (triggerPercent < stopLossMinimal) {
+			revert TriggerToHigh();
+		}
+
+		TransferHelper.safeTransferFrom(
+			IERC20(sellToken),
+			msg.sender,
+			address(this),
+			sellAmount
+		);
+
 		Order memory order = Order(
 			OrderStatus.Active,
 			OrderType.StopLoss,
@@ -87,6 +109,33 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		orders[sellToken][buyToken].push(order);
 	}
 
+	function canExecuteOrder(
+		address sellToken,
+		address buyToken,
+		uint256 indexOrder
+	) public view returns (bool can) {
+		Order memory order = orders[sellToken][buyToken][indexOrder];
+
+		if (order.orderStatus != OrderStatus.Active) {
+			revert OrderNotActive();
+		}
+
+		// support only stop loss actually
+		if (order.orderType == OrderType.StopLoss) {
+			(uint256 price, uint256 decimals) = priceOracle
+				.getAssetPriceRelativeTo(sellToken, buyToken);
+
+			uint8 decimalsSell = IERC20(sellToken).decimals();
+			uint8 decimalsBuy = IERC20(buyToken).decimals();
+			uint256 buyPrice = (uint256(order.sellAmount) * 10 ** decimalsBuy) /
+				uint256(order.buyAmount);
+
+			uint256 triggerAmount = buyPrice +
+				((buyPrice * order.triggerPercent) / PERCENT_DIVISOR);
+
+			can = (triggerAmount * decimals) <= (price * decimalsSell);
+		}
+	}
 
 	function _isContract(address addr) private view returns (bool) {
 		uint256 size;

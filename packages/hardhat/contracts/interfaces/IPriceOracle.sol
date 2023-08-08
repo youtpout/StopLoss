@@ -22,4 +22,6 @@ interface IPriceOracle {
 		address token,
 		address relativeTo
 	) external view returns (uint256 price, uint256 decimals);
+
+	function exist(address token) external view returns (bool);
 }
