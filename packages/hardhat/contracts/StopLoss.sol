@@ -53,7 +53,7 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		Order order
 	);
 
-	event Executed(
+	event Execute(
 		address indexed sender,
 		address indexed sellToken,
 		address indexed buyToken,
@@ -61,6 +61,14 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		uint256 indexB,
 		Order orderA,
 		Order orderB
+	);
+
+	event Cancel(
+		address indexed sender,
+		address indexed sellToken,
+		address indexed buyToken,
+		uint256 index,
+		Order order
 	);
 
 	error NotAContract();
@@ -72,6 +80,7 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 	error CantExecuteOrderB();
 	error InvalidToken();
 	error CantDepositETH();
+	error CantCancel();
 
 	function initialize(
 		address _priceOracle,
@@ -170,6 +179,25 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		emit Add(msg.sender, sellToken, buyToken, index, order);
 	}
 
+	function cancelOrder(address sellToken, address buyToken, uint256 index) {
+		Order storage order = orders[sellToken][buyToken][index];
+		uint256 amountToTransfer = order.sellToComplete;
+		if (
+			order.OrderStatus != OrderStatus.Active ||
+			order.buyer != msg.sender ||
+			amountToTransfer == 0
+		) {
+			revert CantCancel();
+		}
+
+		order.orderStatus = OrderStatus.Canceled;
+		order.sellToComplete = 0;
+
+		TransferHelper.safeTransfer(sellToken, msg.sender, amountToTransfer);
+
+		emit Cancel(msg.sender, sellToken, buyToken, index, order);
+	}
+
 	function executeOrder(
 		address sellToken,
 		address buyToken,
@@ -185,7 +213,7 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 			revert CantExecuteOrderB();
 		}
 
-		emit Executed(
+		emit Execute(
 			msg.sender,
 			sellToken,
 			buyToken,
