@@ -8,6 +8,8 @@ import "./interfaces/IERC20.sol";
 import "./interfaces/IWETH.sol";
 import "./libraries/TransferHelper.sol";
 
+import { console } from "forge-std/console.sol";
+
 contract StopLoss is Initializable, AccessControlUpgradeable {
 	bytes32 public constant CONTROLLER_ROLE = keccak256("CONTROLLER_ROLE");
 	uint256 public constant PERCENT_DIVISOR = 1e5;
@@ -102,7 +104,7 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		_grantRole(CONTROLLER_ROLE, msg.sender);
 
 		priceOracle = IPriceOracle(_priceOracle);
-		WETH = IWETH(WETH);
+		WETH = IWETH(_WETH);
 		stopLossMinimal = 100; // 1% due to price oracle deviation
 	}
 
