@@ -5,11 +5,11 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "./interfaces/IPriceOracle.sol";
 import "./interfaces/IERC20.sol";
+import "./interfaces/IWETH.sol";
 import "./libraries/TransferHelper.sol";
 
 contract StopLoss is Initializable, AccessControlUpgradeable {
 	bytes32 public constant CONTROLLER_ROLE = keccak256("CONTROLLER_ROLE");
-
 	uint256 public constant PERCENT_DIVISOR = 10000;
 
 	enum OrderStatus {
@@ -40,6 +40,7 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 
 	IPriceOracle public priceOracle;
 	uint256 public stopLossMinimal;
+	IWETH public WETH;
 
 	// sell token, buy token, orders
 	mapping(address => mapping(address => Order[])) public orders;
@@ -52,6 +53,16 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		Order order
 	);
 
+	event Executed(
+		address indexed sender,
+		address indexed sellToken,
+		address indexed buyToken,
+		uint256 indexA,
+		uint256 indexB,
+		Order orderA,
+		Order orderB
+	);
+
 	error NotAContract();
 	error IncompatibleToken();
 	error OrderNotActive();
@@ -59,9 +70,14 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 	error NotSupported();
 	error CantExecuteOrderA();
 	error CantExecuteOrderB();
+	error InvalidToken();
+	error CantDepositETH();
 
-	function initialize(address _priceOracle) public initializer {
-		if (!_isContract(_priceOracle)) {
+	function initialize(
+		address _priceOracle,
+		address _WETH
+	) public initializer {
+		if (!_isContract(_priceOracle) || !_isContract(_WETH)) {
 			revert NotAContract();
 		}
 
@@ -71,6 +87,7 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		_grantRole(CONTROLLER_ROLE, msg.sender);
 
 		priceOracle = IPriceOracle(_priceOracle);
+		WETH = IWETH(WETH);
 		stopLossMinimal = 100; // 1% due to price oracle deviation
 	}
 
@@ -91,9 +108,20 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		uint128 sellAmount,
 		uint128 buyAmount,
 		uint16 triggerPercent
-	) external {
-		if (!priceOracle.exist(sellToken) || !priceOracle.exist(buyToken)) {
-			revert IncompatibleToken();
+	) external payable {
+		if (
+			!_isContract(sellToken) ||
+			!_isContract(buyToken) ||
+			sellToken == buyToken
+		) {
+			revert InvalidToken();
+		}
+
+		if (
+			msg.value > 0 &&
+			(sellToken != address(WETH) || sellAmount != msg.value)
+		) {
+			revert CantDepositETH();
 		}
 
 		if (orderType != OrderType.StopLoss && orderType != OrderType.Limit) {
@@ -106,12 +134,23 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 			revert TriggerToHigh();
 		}
 
-		TransferHelper.safeTransferFrom(
-			IERC20(sellToken),
-			msg.sender,
-			address(this),
-			sellAmount
-		);
+		if (
+			(orderType == OrderType.StopLoss &&
+				!priceOracle.exist(sellToken)) || !priceOracle.exist(buyToken)
+		) {
+			revert IncompatibleToken();
+		}
+
+		if (msg.value > 0) {
+			WETH.deposit();
+		} else {
+			TransferHelper.safeTransferFrom(
+				IERC20(sellToken),
+				msg.sender,
+				address(this),
+				sellAmount
+			);
+		}
 
 		Order memory order = Order(
 			OrderStatus.Active,
@@ -145,6 +184,16 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		if (!_canExecuteOrder(buyToken, sellToken, orderB)) {
 			revert CantExecuteOrderB();
 		}
+
+		emit Executed(
+			msg.sender,
+			sellToken,
+			buyToken,
+			indexA,
+			indexB,
+			orderA,
+			orderB
+		);
 	}
 
 	function canExecuteOrder(

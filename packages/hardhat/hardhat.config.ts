@@ -27,6 +27,10 @@ const config: HardhatUserConfig = {
       },
     },
   },
+  mocha: {
+    timeout: 10 * 1000, // 10 seconds
+    reporter: "nyan", // try "nyan" for the NYAN cat
+  },
   defaultNetwork: "localhost",
   namedAccounts: {
     deployer: {
