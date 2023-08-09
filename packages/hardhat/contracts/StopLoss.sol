@@ -159,7 +159,7 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		}
 
 		if (msg.value > 0) {
-			WETH.deposit();
+			WETH.deposit{ value: msg.value }();
 		} else {
 			TransferHelper.safeTransferFrom(
 				IERC20(sellToken),
