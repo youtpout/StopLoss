@@ -10,7 +10,8 @@ import "./libraries/TransferHelper.sol";
 
 contract StopLoss is Initializable, AccessControlUpgradeable {
 	bytes32 public constant CONTROLLER_ROLE = keccak256("CONTROLLER_ROLE");
-	uint256 public constant PERCENT_DIVISOR = 10000;
+	uint256 public constant PERCENT_DIVISOR = 1e5;
+	uint256 public constant PRICE_DECIMALS = 1e18;
 
 	enum OrderStatus {
 		None,
@@ -74,13 +75,18 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 	error NotAContract();
 	error IncompatibleToken();
 	error OrderNotActive();
-	error TriggerToHigh();
+	error TriggerTooHigh();
 	error NotSupported();
 	error CantExecuteOrderA();
 	error CantExecuteOrderB();
 	error InvalidToken();
 	error CantDepositETH();
 	error CantCancel();
+	error SameBuyer();
+	error PriceTooHigh();
+	error PriceOverflow();
+	error OrderAIncorrectlyFulfilled();
+	error OrderBIncorrectlyFulfilled();
 
 	function initialize(
 		address _priceOracle,
@@ -140,7 +146,7 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		if (
 			orderType == OrderType.StopLoss && triggerPercent < stopLossMinimal
 		) {
-			revert TriggerToHigh();
+			revert TriggerTooHigh();
 		}
 
 		if (
@@ -179,11 +185,15 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		emit Add(msg.sender, sellToken, buyToken, index, order);
 	}
 
-	function cancelOrder(address sellToken, address buyToken, uint256 index) {
+	function cancelOrder(
+		address sellToken,
+		address buyToken,
+		uint256 index
+	) external {
 		Order storage order = orders[sellToken][buyToken][index];
 		uint256 amountToTransfer = order.sellToComplete;
 		if (
-			order.OrderStatus != OrderStatus.Active ||
+			order.orderStatus != OrderStatus.Active ||
 			order.buyer != msg.sender ||
 			amountToTransfer == 0
 		) {
@@ -193,7 +203,11 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		order.orderStatus = OrderStatus.Canceled;
 		order.sellToComplete = 0;
 
-		TransferHelper.safeTransfer(sellToken, msg.sender, amountToTransfer);
+		TransferHelper.safeTransfer(
+			IERC20(sellToken),
+			msg.sender,
+			amountToTransfer
+		);
 
 		emit Cancel(msg.sender, sellToken, buyToken, index, order);
 	}
@@ -211,6 +225,78 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		Order storage orderB = orders[buyToken][sellToken][indexB];
 		if (!_canExecuteOrder(buyToken, sellToken, orderB)) {
 			revert CantExecuteOrderB();
+		}
+
+		address buyerA = orderA.buyer;
+		address buyerB = orderB.buyer;
+
+		if (buyerA == buyerB) {
+			revert SameBuyer();
+		}
+
+		uint256 priceOrderA = (orderA.buyAmount * PRICE_DECIMALS) /
+			orderA.sellAmount;
+		uint256 priceOrderB = (orderB.sellAmount * PRICE_DECIMALS) /
+			orderB.buyAmount;
+		if (priceOrderA > priceOrderB) {
+			revert PriceTooHigh();
+		}
+
+		uint128 amountTransfered = orderA.buyToComplete;
+		if (amountTransfered > orderB.sellToComplete) {
+			amountTransfered = orderB.sellToComplete;
+		}
+
+		// we sold as order B price
+		uint256 soldPrice = (amountTransfered * orderB.buyAmount) /
+			orderB.sellAmount;
+		if (soldPrice > type(uint128).max) {
+			revert PriceOverflow();
+		}
+		uint128 soldTransfered = uint128(soldPrice);
+
+		// the token to buy for trader A is the token to sell for trader B
+		orderA.buyToComplete -= amountTransfered;
+		orderB.sellToComplete -= amountTransfered;
+
+		orderA.sellToComplete -= soldTransfered;
+		orderB.buyToComplete -= soldTransfered;
+
+		TransferHelper.safeTransfer(IERC20(buyToken), buyerA, amountTransfered);
+		TransferHelper.safeTransfer(IERC20(sellToken), buyerB, soldTransfered);
+
+		if (orderA.buyToComplete == 0) {
+			orderA.orderStatus = OrderStatus.Executed;
+
+			uint256 toComplete = orderA.sellToComplete;
+			if (toComplete > 0) {
+				// reimbourse rest of token
+				orderA.sellToComplete = 0;
+				TransferHelper.safeTransfer(
+					IERC20(sellToken),
+					buyerA,
+					toComplete
+				);
+			}
+		} else if (orderA.sellToComplete == 0 && orderA.buyToComplete > 0) {
+			revert OrderAIncorrectlyFulfilled();
+		}
+
+		if (orderB.buyToComplete == 0) {
+			orderB.orderStatus = OrderStatus.Executed;
+
+			uint256 toComplete = orderB.sellToComplete;
+			if (toComplete > 0) {
+				// reimbourse rest of token
+				orderB.sellToComplete = 0;
+				TransferHelper.safeTransfer(
+					IERC20(sellToken),
+					buyerB,
+					toComplete
+				);
+			}
+		} else if (orderB.sellToComplete == 0 && orderB.buyToComplete > 0) {
+			revert OrderBIncorrectlyFulfilled();
 		}
 
 		emit Execute(
