@@ -44,10 +44,19 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 	// sell token, buy token, orders
 	mapping(address => mapping(address => Order[])) public orders;
 
+	event Add(
+		address indexed sender,
+		address indexed sellToken,
+		address indexed buyToken,
+		uint256 index,
+		Order order
+	);
+
 	error NotAContract();
 	error IncompatibleToken();
 	error OrderNotActive();
 	error TriggerToHigh();
+	error NotSupported();
 
 	function initialize(address _priceOracle) public initializer {
 		if (!_isContract(_priceOracle)) {
@@ -73,7 +82,8 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		priceOracle = IPriceOracle(_priceOracle);
 	}
 
-	function addStopLoss(
+	function addOrder(
+		OrderType orderType,
 		address sellToken,
 		address buyToken,
 		uint128 sellAmount,
@@ -84,7 +94,13 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 			revert IncompatibleToken();
 		}
 
-		if (triggerPercent < stopLossMinimal) {
+		if (orderType != OrderType.StopLoss && orderType != orderType.Limit) {
+			revert NotSupported();
+		}
+
+		if (
+			orderType == OrderType.StopLoss && triggerPercent < stopLossMinimal
+		) {
 			revert TriggerToHigh();
 		}
 
@@ -106,7 +122,11 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 			buyAmount
 		);
 
+		uint256 index = orders[sellToken][buyToken].length;
+
 		orders[sellToken][buyToken].push(order);
+
+		emit Add(msg.sender, sellToken, buyToken, index, order);
 	}
 
 	function canExecuteOrder(
