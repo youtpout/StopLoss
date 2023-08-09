@@ -57,6 +57,8 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 	error OrderNotActive();
 	error TriggerToHigh();
 	error NotSupported();
+	error CantExecuteOrderA();
+	error CantExecuteOrderB();
 
 	function initialize(address _priceOracle) public initializer {
 		if (!_isContract(_priceOracle)) {
@@ -94,7 +96,7 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 			revert IncompatibleToken();
 		}
 
-		if (orderType != OrderType.StopLoss && orderType != orderType.Limit) {
+		if (orderType != OrderType.StopLoss && orderType != OrderType.Limit) {
 			revert NotSupported();
 		}
 
@@ -129,19 +131,44 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		emit Add(msg.sender, sellToken, buyToken, index, order);
 	}
 
+	function executeOrder(
+		address sellToken,
+		address buyToken,
+		uint256 indexA,
+		uint256 indexB
+	) external {
+		Order storage orderA = orders[sellToken][buyToken][indexA];
+		if (!_canExecuteOrder(sellToken, buyToken, orderA)) {
+			revert CantExecuteOrderA();
+		}
+		Order storage orderB = orders[buyToken][sellToken][indexB];
+		if (!_canExecuteOrder(buyToken, sellToken, orderB)) {
+			revert CantExecuteOrderB();
+		}
+	}
+
 	function canExecuteOrder(
 		address sellToken,
 		address buyToken,
 		uint256 indexOrder
-	) public view returns (bool can) {
+	) external view returns (bool) {
 		Order memory order = orders[sellToken][buyToken][indexOrder];
+		return _canExecuteOrder(sellToken, buyToken, order);
+	}
 
+	function _canExecuteOrder(
+		address sellToken,
+		address buyToken,
+		Order memory order
+	) private view returns (bool can) {
 		if (order.orderStatus != OrderStatus.Active) {
 			revert OrderNotActive();
 		}
 
-		// support only stop loss actually
-		if (order.orderType == OrderType.StopLoss) {
+		// support only stop loss and limit actually
+		if (order.orderType == OrderType.Limit) {
+			can = true;
+		} else if (order.orderType == OrderType.StopLoss) {
 			(uint256 price, uint256 decimals) = priceOracle
 				.getAssetPriceRelativeTo(sellToken, buyToken);
 
