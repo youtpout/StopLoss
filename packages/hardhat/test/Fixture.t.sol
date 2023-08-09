@@ -6,6 +6,7 @@ import { console } from "forge-std/console.sol";
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { StopLoss } from "contracts/StopLoss.sol";
 import { PriceOracle } from "contracts/PriceOracle.sol";
+import { PriceFeedMock } from "./mocks/PriceFeedMock.sol";
 
 import { TransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import { ProxyAdmin } from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
@@ -22,6 +23,9 @@ contract Fixture is Test {
 
 	ERC20 public constant wEth =
 		ERC20(0x4200000000000000000000000000000000000006);
+
+	ERC20 public constant linkToken =
+		ERC20(0x350a791Bfc2C21F9Ed5d10980Dad2e2638ffa7f6);
 
 	ProxyAdmin public proxyAdmin;
 	StopLoss public stopLoss;
@@ -93,7 +97,11 @@ contract Fixture is Test {
 			0x16a9FA2FDa030272Ce99B29CF780dFA30361E0f3
 		);
 
-        console.log("price oracle configured");
+		PriceFeedMock priceFeedMock = new PriceFeedMock();
+
+		priceOracle.addPriceFeed(address(linkToken), address(priceFeedMock));
+
+		console.log("price oracle configured");
 
 		stopLoss = StopLoss(
 			_deployProxy(
