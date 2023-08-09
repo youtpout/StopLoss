@@ -171,7 +171,7 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 
 		Order memory order = Order(
 			OrderStatus.Active,
-			OrderType.StopLoss,
+			orderType,
 			msg.sender,
 			triggerPercent,
 			sellAmount,
