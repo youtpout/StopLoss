@@ -115,6 +115,48 @@ contract StopLossTests is Fixture {
 		assertEq(amountAlice - usdcAmount, usdcToken.balanceOf(alice));
 	}
 
+	function test_ExecuteOrder2() public {
+		deal(daniel, 10 ether);
+		uint256 amountAlice = 2000 * 10 ** usdcToken.decimals();
+		deal(address(usdcToken), alice, amountAlice);
+		vm.startPrank(daniel);
+
+		uint256 usdcAmount = 2200 * 10 ** usdcToken.decimals();
+
+		stopLoss.addOrder{ value: 1 ether }(
+			StopLoss.OrderType.Limit,
+			address(wEth),
+			address(usdcToken),
+			uint128(1 ether),
+			uint128(usdcAmount),
+			0
+		);
+
+		vm.stopPrank();
+
+		vm.startPrank(alice);
+
+		usdcToken.approve(address(stopLoss), amountAlice);
+
+		stopLoss.addOrder(
+			StopLoss.OrderType.Limit,
+			address(usdcToken),
+			address(wEth),
+			uint128(amountAlice),
+			uint128(1 ether),
+			0
+		);
+
+		vm.stopPrank();
+
+		vm.startPrank(deployer);
+
+		vm.expectRevert(StopLoss.PriceTooHigh.selector);
+		stopLoss.executeOrder(address(usdcToken), address(wEth), 0, 0);
+
+		vm.stopPrank();
+	}
+
 	function test_ExecuteStopLossOrder() public {
 		deal(daniel, 10 ether);
 		uint256 thousand_links = 1000 * 10 ** linkToken.decimals();
