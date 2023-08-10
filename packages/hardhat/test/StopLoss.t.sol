@@ -170,8 +170,8 @@ contract StopLossTests is Fixture {
 
 		vm.stopPrank();
 
-		// assertEq(usdcAmount, usdcToken.balanceOf(daniel));
-		// assertEq(1 ether, wEth.balanceOf(alice));
-		// assertEq(amountAlice - usdcAmount, usdcToken.balanceOf(alice));
+		assertEq(thousand_links, linkToken.balanceOf(daniel));
+		assertEq(stop_usdc, usdcToken.balanceOf(alice));
+		assertEq(sellusdc - stop_usdc, usdcToken.balanceOf(daniel));
 	}
 }
