@@ -3,6 +3,8 @@ pragma solidity ^0.8.20;
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract PriceFeedMock is AggregatorV3Interface {
+	int256 public answer;
+
 	function decimals() external view returns (uint8) {
 		return 8;
 	}
@@ -15,6 +17,10 @@ contract PriceFeedMock is AggregatorV3Interface {
 		return 4;
 	}
 
+	function setAnswer(int256 value) external {
+		answer = value;
+	}
+
 	function getRoundData(
 		uint80 _roundId
 	)
@@ -22,7 +28,7 @@ contract PriceFeedMock is AggregatorV3Interface {
 		view
 		returns (
 			uint80 roundId,
-			int256 answer,
+			int256 answer_,
 			uint256 startedAt,
 			uint256 updatedAt,
 			uint80 answeredInRound
@@ -30,7 +36,7 @@ contract PriceFeedMock is AggregatorV3Interface {
 	{
 		return (
 			uint80(_roundId),
-			int256((_roundId * block.timestamp) / 10000),
+			answer - int256(uint256(_roundId)),
 			block.timestamp - 1000,
 			block.timestamp - 500,
 			uint80(_roundId + 1)
@@ -42,7 +48,7 @@ contract PriceFeedMock is AggregatorV3Interface {
 		view
 		returns (
 			uint80 roundId,
-			int256 answer,
+			int256 answer_,
 			uint256 startedAt,
 			uint256 updatedAt,
 			uint80 answeredInRound
@@ -50,7 +56,7 @@ contract PriceFeedMock is AggregatorV3Interface {
 	{
 		return (
 			uint80(block.timestamp * 10),
-			int256((block.timestamp % 70) * 10 ** 8),
+			answer,
 			block.timestamp - 500,
 			block.timestamp - 500,
 			uint80(block.timestamp * 10)
