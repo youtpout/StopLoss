@@ -12,7 +12,7 @@ import { console } from "forge-std/console.sol";
 
 contract StopLoss is Initializable, AccessControlUpgradeable {
 	bytes32 public constant CONTROLLER_ROLE = keccak256("CONTROLLER_ROLE");
-	uint256 public constant PERCENT_DIVISOR = 1e5;
+	uint256 public constant PERCENT_DIVISOR = 10_000;
 	uint256 public constant PRICE_DECIMALS = 1e18;
 
 	enum OrderStatus {
@@ -334,18 +334,21 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		if (order.orderType == OrderType.Limit) {
 			can = true;
 		} else if (order.orderType == OrderType.StopLoss) {
+			uint256 sellAmount = order.sellAmount;
+			uint256 buyAmount = order.buyAmount;
 			(uint256 price, uint256 decimals) = priceOracle
 				.getAssetPriceRelativeTo(sellToken, buyToken);
 
 			uint8 decimalsSell = IERC20(sellToken).decimals();
 			uint8 decimalsBuy = IERC20(buyToken).decimals();
-			uint256 buyPrice = (uint256(order.sellAmount) * 10 ** decimalsBuy) /
-				uint256(order.buyAmount);
+			uint256 sellPrice = (buyAmount * 10 ** decimalsSell) / sellAmount;
 
-			uint256 triggerAmount = buyPrice +
-				((buyPrice * order.triggerPercent) / PERCENT_DIVISOR);
+			uint256 triggerAmount = sellPrice +
+				(sellPrice * order.triggerPercent) /
+				PERCENT_DIVISOR;
 
-			can = (triggerAmount * decimals) <= (price * decimalsSell);
+			can =
+				(triggerAmount * 10 ** decimals) >= (price * 10 ** decimalsBuy);
 		}
 	}
 

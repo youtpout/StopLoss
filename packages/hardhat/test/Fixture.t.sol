@@ -30,6 +30,7 @@ contract Fixture is Test {
 	ProxyAdmin public proxyAdmin;
 	StopLoss public stopLoss;
 	PriceOracle public priceOracle;
+	PriceFeedMock public priceFeedMock;
 
 	address deployer = makeAddr("Deployer");
 	address alice = makeAddr("Alice");
@@ -97,7 +98,7 @@ contract Fixture is Test {
 			0x16a9FA2FDa030272Ce99B29CF780dFA30361E0f3
 		);
 
-		PriceFeedMock priceFeedMock = new PriceFeedMock();
+		priceFeedMock = new PriceFeedMock();
 
 		priceOracle.addPriceFeed(address(linkToken), address(priceFeedMock));
 

@@ -114,4 +114,64 @@ contract StopLossTests is Fixture {
 		assertEq(1 ether, wEth.balanceOf(alice));
 		assertEq(amountAlice - usdcAmount, usdcToken.balanceOf(alice));
 	}
+
+	function test_ExecuteStopLossOrder() public {
+		deal(daniel, 10 ether);
+		uint256 thousand_links = 1000 * 10 ** linkToken.decimals();
+		uint256 stop_usdc = 7000 * 10 ** usdcToken.decimals();
+		deal(address(linkToken), alice, thousand_links);
+
+		vm.startPrank(alice);
+
+		linkToken.approve(address(stopLoss), thousand_links);
+		stopLoss.addOrder(
+			StopLoss.OrderType.StopLoss,
+			address(linkToken),
+			address(usdcToken),
+			uint128(thousand_links),
+			uint128(stop_usdc),
+			500 // 5% trigger at 7.35 $ (7350 $ for 1000 link)
+		);
+
+		vm.stopPrank();
+
+		vm.startPrank(daniel);
+
+		uint256 sellusdc = 7200 * 10 ** usdcToken.decimals();
+		deal(address(usdcToken), daniel, sellusdc);
+		usdcToken.approve(address(stopLoss), sellusdc);
+
+		// daniel create order limit, 7200 $ for 1000 links
+		stopLoss.addOrder(
+			StopLoss.OrderType.Limit,
+			address(usdcToken),
+			address(linkToken),
+			uint128(sellusdc),
+			uint128(thousand_links),
+			0
+		);
+
+		vm.stopPrank();
+
+		vm.startPrank(deployer);
+
+		vm.expectRevert(StopLoss.CantExecuteOrderB.selector);
+		stopLoss.executeOrder(address(usdcToken), address(linkToken), 0, 0);
+
+		priceFeedMock.setAnswer(751599200);
+
+		vm.expectRevert(StopLoss.CantExecuteOrderB.selector);
+		stopLoss.executeOrder(address(usdcToken), address(linkToken), 0, 0);
+
+		priceFeedMock.setAnswer(731599200);
+
+		// execute when price lower than 7.35$
+		stopLoss.executeOrder(address(usdcToken), address(linkToken), 0, 0);
+
+		vm.stopPrank();
+
+		// assertEq(usdcAmount, usdcToken.balanceOf(daniel));
+		// assertEq(1 ether, wEth.balanceOf(alice));
+		// assertEq(amountAlice - usdcAmount, usdcToken.balanceOf(alice));
+	}
 }

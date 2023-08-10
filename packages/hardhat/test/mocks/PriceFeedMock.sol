@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract PriceFeedMock is AggregatorV3Interface {
-	int256 public answer;
+	int256 public answer = 761599200;
 
 	function decimals() external view returns (uint8) {
 		return 8;
