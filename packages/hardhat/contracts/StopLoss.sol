@@ -321,6 +321,21 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		return _canExecuteOrder(sellToken, buyToken, order);
 	}
 
+	function countOrders(
+		address sellToken,
+		address buyToken
+	) external view returns (uint256) {
+		return orders[sellToken][buyToken].length;
+	}
+
+	function getOrder(
+		address sellToken,
+		address buyToken,
+		uint256 index
+	) external view returns (Order memory) {
+		return orders[sellToken][buyToken][index];
+	}
+
 	function _canExecuteOrder(
 		address sellToken,
 		address buyToken,
