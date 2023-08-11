@@ -10,8 +10,8 @@ import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 
 /// @title Flash order
 /// @author Youtpout
-/// @notice Script to automate order execution from uni v2-router
-contract FlashOrder is IUniswapV2Callee, Ownable {
+/// @notice Script to automate order execution from uni v2-pair
+contract FlashOrderV2 is IUniswapV2Callee, Ownable {
 	struct FlashInfo {
 		address sellToken;
 		address buyToken;

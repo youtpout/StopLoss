@@ -8,8 +8,6 @@ import "./interfaces/IERC20.sol";
 import "./interfaces/IWETH.sol";
 import "./libraries/TransferHelper.sol";
 
-import { console } from "forge-std/console.sol";
-
 contract StopLoss is Initializable, AccessControlUpgradeable {
 	bytes32 public constant CONTROLLER_ROLE = keccak256("CONTROLLER_ROLE");
 	uint256 public constant PERCENT_DIVISOR = 10_000;

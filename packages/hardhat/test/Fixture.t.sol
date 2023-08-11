@@ -101,9 +101,7 @@ contract Fixture is Test {
 		priceFeedMock = new PriceFeedMock();
 
 		priceOracle.addPriceFeed(address(linkToken), address(priceFeedMock));
-
-		console.log("price oracle configured");
-
+		
 		stopLoss = StopLoss(
 			_deployProxy(
 				address(new StopLoss()),

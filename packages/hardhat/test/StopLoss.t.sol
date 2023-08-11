@@ -115,7 +115,7 @@ contract StopLossTests is Fixture {
 		assertEq(amountAlice - usdcAmount, usdcToken.balanceOf(alice));
 	}
 
-	function test_ExecuteOrder2() public {
+	function test_RevertOrder() public {
 		deal(daniel, 10 ether);
 		uint256 amountAlice = 2000 * 10 ** usdcToken.decimals();
 		deal(address(usdcToken), alice, amountAlice);
