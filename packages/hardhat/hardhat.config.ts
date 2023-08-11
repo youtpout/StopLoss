@@ -16,15 +16,35 @@ const deployerPrivateKey =
 // If not set, it uses ours Etherscan default API key.
 const etherscanApiKey = process.env.ETHERSCAN_API_KEY || "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW";
 
+const UNISWAP_SETTING = {
+  version: "0.7.6",
+  settings: {
+    optimizer: {
+      enabled: true,
+      runs: 2_000,
+    },
+  },
+};
+
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.20",
-    settings: {
-      optimizer: {
-        enabled: true,
-        // https://docs.soliditylang.org/en/latest/using-the-compiler.html#optimizer-options
-        runs: 200,
+    compilers: [
+      {
+        version: "0.8.20",
+        settings: {
+          optimizer: {
+            enabled: true,
+            // https://docs.soliditylang.org/en/latest/using-the-compiler.html#optimizer-options
+            runs: 200,
+          },
+        },
       },
+      UNISWAP_SETTING,
+    ],
+    overrides: {
+      "@uniswap/v3-core/contracts/libraries/FullMath.sol": UNISWAP_SETTING,
+      "@uniswap/v3-core/contracts/libraries/TickMath.sol": UNISWAP_SETTING,
+      "@uniswap/v3-periphery/contracts/libraries/PoolAddress.sol": UNISWAP_SETTING,
     },
   },
   mocha: {
