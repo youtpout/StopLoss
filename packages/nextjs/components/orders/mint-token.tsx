@@ -63,7 +63,7 @@ export const MintToken = () => {
         setBalance(ethers.utils.formatEther(amt));
       }
     } catch (error) {
-      toast.error("Error " + JSON.stringify(error));
+      console.error("get balance", error);
     }
   };
 

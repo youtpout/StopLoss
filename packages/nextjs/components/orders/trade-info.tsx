@@ -4,11 +4,12 @@ import { ethers } from "ethers";
 import toast from "react-hot-toast";
 import { useNetwork } from "wagmi";
 import { useEthersSigner } from "~~/services/ethers";
-import { StopLoss__factory } from "~~/types/typechain-types";
+import { StopLoss__factory, TestERC20__factory } from "~~/types/typechain-types";
 
 export const TradeInfo = ({ pair }) => {
   const [orderType, setOrderType] = useState("Limit");
   const [orderSell, setOrderSell] = useState(true);
+  const [needApprove, setNeedApprove] = useState(true);
   const [amount, setAmount] = useState(0);
   const [limit, setLimit] = useState(0);
   const [trigger, setTrigger] = useState(1);
@@ -19,7 +20,11 @@ export const TradeInfo = ({ pair }) => {
 
   useEffect(() => {
     setChainId(chain?.id || 420);
-  }, [chain]);
+
+    if (chain && signer) {
+      getAllowance().then;
+    }
+  }, [chain, signer]);
 
   useEffect(() => {
     const calc = (limit * trigger) / 100;
@@ -29,6 +34,11 @@ export const TradeInfo = ({ pair }) => {
 
   const placeOrder = async () => {
     try {
+      if (needApprove) {
+        toast("Approve the contract for this token");
+        return;
+      }
+
       const contractSelected = addresses.find(x => x.name === "Stop Loss");
       const address = contractSelected?.addresses?.find(x => x.chainId === chainId)?.address;
       const addressT0 = pair.token0?.addresses?.find(x => x.chainId === chainId)?.address;
@@ -61,6 +71,44 @@ export const TradeInfo = ({ pair }) => {
       }
     } catch (error) {
       toast.error("Error " + JSON.stringify(error));
+    }
+  };
+
+  const approve = async () => {
+    try {
+      const contractSelected = addresses.find(x => x.name === "Stop Loss");
+      const address = contractSelected?.addresses?.find(x => x.chainId === chainId)?.address;
+      const addressT0 = pair.token0?.addresses?.find(x => x.chainId === chainId)?.address;
+      if (address && signer) {
+        const tokenContract = TestERC20__factory.connect(addressT0, signer);
+        toast("Approving");
+
+        const execute = await tokenContract.approve(address, ethers.constants.MaxUint256);
+        await execute.wait();
+
+        toast.success("Contract approved!");
+      } else {
+        toast.error("Maybe you are not connected");
+      }
+    } catch (error) {
+      toast.error("Error " + JSON.stringify(error));
+    }
+  };
+
+  const getAllowance = async () => {
+    try {
+      const contractSelected = addresses.find(x => x.name === "Stop Loss");
+      const address = contractSelected?.addresses?.find(x => x.chainId === chainId)?.address;
+      const addressT0 = pair.token0?.addresses?.find(x => x.chainId === chainId)?.address;
+      if (address && signer) {
+        const user = await signer.getAddress();
+        const tokenContract = TestERC20__factory.connect(addressT0, signer);
+        const amountEth = ethers.utils.parseEther(amount.toString()) as BigNumber;
+        const allowance = await tokenContract.allowance(user, address);
+        setNeedApprove(amountEth.gt(allowance));
+      }
+    } catch (error) {
+      console.error("get allowance", error);
     }
   };
 
@@ -127,6 +175,14 @@ export const TradeInfo = ({ pair }) => {
             <div className="trigger-price">
               Trigger : {triggerPrice} {pair?.token1.symbol}
             </div>
+          </div>
+        )}
+
+        {needApprove && (
+          <div className="place-order">
+            <button className="s-button" onClick={() => approve()}>
+              Approve
+            </button>
           </div>
         )}
         <div className="place-order">
