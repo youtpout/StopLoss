@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import addresses from "../constants/addresses";
+import { Bars3Icon } from "@heroicons/react/20/solid";
+import { CurrencyDollarIcon, CurrencyRupeeIcon } from "@heroicons/react/24/outline";
 
 export const PairChoice = ({ selectedPair }) => {
   const [pair, setPair] = useState("fEth-fUSDC");
@@ -28,7 +30,9 @@ export const PairChoice = ({ selectedPair }) => {
 
   return (
     <div className="menu-tokens">
-      <div>{pair.toUpperCase()}</div>
+      <div className="token-label">
+        <CurrencyDollarIcon className="token-icon" /> {pair.toUpperCase()}
+      </div>
       <div className="tokens-content">
         {listTokens.map((el, index) => (
           <button key={index} onClick={() => setPair(el)}>

@@ -4,6 +4,7 @@ import type { NextPage } from "next";
 import { useNetwork } from "wagmi";
 import { BugAntIcon, MagnifyingGlassIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
+import { MintToken } from "~~/components/orders/mint-token";
 import { PairChoice } from "~~/components/orders/pair-choice";
 import { TradeInfo } from "~~/components/orders/trade-info";
 
@@ -29,6 +30,7 @@ const Home: NextPage = () => {
         <div className="home-content">
           <div className="home-menu">
             <TradeInfo pair={undefined} buy={undefined}></TradeInfo>
+            <MintToken></MintToken>
           </div>
           <div>{JSON.stringify(pair)}</div>
         </div>
