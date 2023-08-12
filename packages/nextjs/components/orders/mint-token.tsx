@@ -3,7 +3,7 @@ import { useEthersSigner } from "../../services/ethers";
 import addresses from "../constants/addresses";
 import { ethers } from "ethers";
 import toast from "react-hot-toast";
-import { type WalletClient, useNetwork, useWalletClient } from "wagmi";
+import { useNetwork } from "wagmi";
 import { TestERC20__factory } from "~~/types/typechain-types";
 
 export const MintToken = () => {
@@ -43,6 +43,8 @@ export const MintToken = () => {
         await execute.wait();
 
         toast.success("Successfully minted!");
+      } else {
+        toast.error("Maybe you are not connected");
       }
     } catch (error) {
       toast.error("Error " + JSON.stringify(error));
@@ -69,7 +71,7 @@ export const MintToken = () => {
     <div className="mint-info">
       <h3>Mint token for test</h3>
       <div className="mint-content">
-        <select value={token} onChange={e => setToken(e.target.value)}>
+        <select className="s-select" value={token} onChange={e => setToken(e.target.value)}>
           <option value={"fEth"}>fEth</option>
           <option value={"fLink"}>fLink</option>
           <option value={"fUSDC"}>fUSDC</option>
@@ -77,13 +79,16 @@ export const MintToken = () => {
           <option value={"mEth"}>mEth</option>
         </select>
         <input
+          className="s-input"
           type="number"
           placeholder="Amount"
           defaultValue={amount}
           onChange={e => setAmount(e.target.value)}
         ></input>
         <div className="mint-button">
-          <button onClick={() => mint()}>Mint</button>
+          <button className="s-button" onClick={() => mint()}>
+            Mint
+          </button>
         </div>
         <div>Actual balance : {balance}</div>
       </div>

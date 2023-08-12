@@ -1,3 +1,35 @@
+@import "variables";
+
+.s-button {
+  border: $border-line;
+  padding: 10px;
+  color: white;
+  border-radius: 5px;
+  width: 180px;
+
+  &:hover {
+    box-shadow: white 0px 1px 2px 0px;
+  }
+}
+
+.s-select {
+  border: $border-line;
+  padding: 5px 10px;
+  border-radius: 5px;
+  width: 180px;
+  color: black;
+  margin-bottom: 10px;
+}
+
+.s-input {
+  border: $border-line;
+  padding: 5px 10px;
+  border-radius: 5px;
+  width: 180px;
+  color: black;
+  margin-bottom: 10px;
+}
+
 .menu-tokens {
   position: relative;
   display: inline-block;
@@ -22,7 +54,8 @@
     display: none;
     position: absolute;
     color: white;
-    min-width: 160px;
+    left: -10px;
+    width: 300px;
     z-index: 1;
     background-color: black;
 
@@ -37,6 +70,7 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
+    padding: 10px 10px 10px 50px;
   }
 }
 
@@ -44,6 +78,8 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  margin-top: 10px;
+  border-top: $border-line;
   .choose-order {
     display: flex;
     flex-direction: row;
@@ -52,7 +88,7 @@
 
     button {
       flex: 1;
-      border: 1px solid rgba(255, 255, 255, 0.6);
+      border: $border-line;
       padding: 10px;
       border-top: 0;
       &:nth-child(1) {
@@ -62,7 +98,7 @@
       &:nth-child(2) {
         border-right: 0px;
       }
-      color: rgba(255, 255, 255, 0.6);
+      color: $transparent;
 
       &.selected {
         color: white;
@@ -74,6 +110,8 @@
 .mint-info {
   display: flex;
   flex-direction: column;
+  margin-top: 10px;
+  border-top: $border-line;
 
   h3 {
     margin: 10px;
@@ -85,32 +123,5 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-  }
-
-  select {
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    padding: 5px 10px;
-    border-radius: 5px;
-    width: 180px;
-    color: black;
-    margin-bottom: 10px;
-  }
-
-  input {
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    padding: 5px 10px;
-    border-radius: 5px;
-    width: 180px;
-    color: black;
-    margin-bottom: 10px;
-  }
-
-  .mint-button {
-    button {
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      padding: 10px;
-      border-radius: 5px;
-      width: 180px;
-    }
   }
 }
