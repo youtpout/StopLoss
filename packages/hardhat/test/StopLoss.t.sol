@@ -3,11 +3,14 @@ pragma solidity ^0.8.0;
 
 import { Fixture } from "./Fixture.t.sol";
 import { StopLoss } from "contracts/StopLoss.sol";
+import { TestERC20 } from "contracts/TestERC20.sol";
 import { console } from "forge-std/console.sol";
 
 contract StopLossTests is Fixture {
 	function setUp() public override {
 		super.setUp();
+
+		TestERC20 testErc20 = new TestERC20("Fake Ether", "fEth");
 	}
 
 	function test_AddStopLossOrder() public {
