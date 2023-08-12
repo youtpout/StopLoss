@@ -32,6 +32,7 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		OrderStatus orderStatus;
 		OrderType orderType;
 		address buyer;
+		uint32 timestamp;
 		uint16 triggerPercent;
 		uint128 sellAmount;
 		uint128 buyAmount;
@@ -171,6 +172,7 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 			OrderStatus.Active,
 			orderType,
 			msg.sender,
+			uint32(block.timestamp),
 			triggerPercent,
 			sellAmount,
 			buyAmount,
