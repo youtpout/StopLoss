@@ -40,12 +40,28 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		uint128 buyToComplete;
 	}
 
+	// store info to retrieve all orders from chain without thegraph (zora)
+	struct OrderInfo {
+		address sellToken;
+		address buyToken;
+		uint256 index;
+	}
+
+	struct OrderData {
+		address sellToken;
+		address buyToken;
+		uint256 index;
+		Order order;
+	}
+
 	IPriceOracle public priceOracle;
 	uint256 public stopLossMinimal;
 	IWETH public WETH;
 
 	// sell token, buy token, orders
 	mapping(address => mapping(address => Order[])) public orders;
+
+	OrderInfo[] public allOrders;
 
 	event Add(
 		address indexed sender,
@@ -183,6 +199,9 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		uint256 index = orders[sellToken][buyToken].length;
 
 		orders[sellToken][buyToken].push(order);
+
+		OrderInfo memory info = OrderInfo(sellToken, buyToken, index);
+		allOrders.push(info);
 
 		emit Add(msg.sender, sellToken, buyToken, index, order);
 	}
@@ -326,6 +345,37 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		address buyToken
 	) external view returns (uint256) {
 		return orders[sellToken][buyToken].length;
+	}
+
+	function countAllOrders() external view returns (uint256) {
+		return allOrders.length;
+	}
+
+	function fetchPageOrders(
+		uint256 cursor,
+		uint256 howMany
+	) external view returns (OrderData[] memory values, uint256 newCursor) {
+		uint256 length = howMany;
+		uint256 orderCount = allOrders.length;
+		if (length > orderCount - cursor) {
+			length = orderCount - cursor;
+		}
+
+		values = new OrderData[](length);
+		for (uint256 i = 0; i < length; i++) {
+			OrderInfo memory info = allOrders[i];
+			Order memory order = orders[info.sellToken][info.buyToken][
+				info.index
+			];
+			values[i] = OrderData(
+				info.sellToken,
+				info.buyToken,
+				info.index,
+				order
+			);
+		}
+
+		return (values, cursor + length);
 	}
 
 	function getOrder(

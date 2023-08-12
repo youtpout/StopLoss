@@ -113,6 +113,14 @@ contract StopLossTests is Fixture {
 		assertEq(usdcAmount, usdcToken.balanceOf(daniel));
 		assertEq(1 ether, wEth.balanceOf(alice));
 		assertEq(amountAlice - usdcAmount, usdcToken.balanceOf(alice));
+
+		(StopLoss.OrderData[] memory allOrders, ) = stopLoss.fetchPageOrders(
+			0,
+			100
+		);
+		assertEq(allOrders.length, 2);
+		assertEq(allOrders[0].order.sellAmount, 1 ether);
+		assertEq(allOrders[1].order.sellAmount, amountAlice);
 	}
 
 	function test_RevertOrder() public {
