@@ -48,7 +48,7 @@ const Home: NextPage = () => {
               )}
               {!user && <span>Not connected</span>}
             </div>
-            <TradeInfo pair={undefined} buy={undefined}></TradeInfo>
+            <TradeInfo pair={pair} buy={undefined}></TradeInfo>
             <MintToken></MintToken>
           </div>
 

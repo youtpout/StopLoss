@@ -87,7 +87,7 @@ const addresses = [
     addresses: [
       {
         chainId: 420,
-        address: "0x6e5aca3b88fc0816b52557549bf998fced333893",
+        address: "0xDeEB811d79382b42eE60EDB8a204F5949d1169f4",
       },
     ],
   },

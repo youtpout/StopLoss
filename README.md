@@ -9,7 +9,7 @@ Fake Bitcoin 0xB91da63f4403B3295eba6ea19822517AF41Bfa03
 Manipulable Ether 0xB35d9E3A7f27982b7f0ABBEe731B109deeD5d2bc
 PriceFeedEthMock 0xdEa0F6213B346fBAB757E60949D819cD846748a3
 price Oracle 0x2a6b481Af079aD10c945508Da5f44d13356dABc2
-StopLoss 0x6e5aca3b88fc0816b52557549bf998fced333893
+StopLoss 0xDeEB811d79382b42eE60EDB8a204F5949d1169f4
 
 npx hardhat verify --constructor-args scripts/arg-feth.ts --network optimismGoerli 0xb7672932294f0650c8c668B8c834596A620d27c1 
 npx hardhat verify --network optimismGoerli 0xdEa0F6213B346fBAB757E60949D819cD846748a3
