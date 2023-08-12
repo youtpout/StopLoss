@@ -1,0 +1,61 @@
+.menu-tokens {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  color: white;
+  margin: 10px;
+
+  font-size: 1.2rem;
+
+  .tokens-content {
+    display: none;
+    position: absolute;
+    color: white;
+    min-width: 160px;
+    z-index: 1;
+    background-color: black;
+
+    button {
+      padding: 0;
+      margin: 0;
+    }
+  }
+
+  &:hover .tokens-content {
+    display: flex !important;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+}
+
+.trade-info {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  .choose-order {
+    display: flex;
+    flex-direction: row;
+    justify-content: stretch;
+    flex: 1;
+
+    button {
+      flex: 1;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      padding: 10px;
+      border-top: 0;
+      &:nth-child(1) {
+        border-left: 0px;
+        border-right: 0px;
+      }
+      &:nth-child(2) {
+        border-right: 0px;
+      }
+      color: rgba(255, 255, 255, 0.6);
+
+      &.selected {
+        color: white;
+      }
+    }
+  }
+}

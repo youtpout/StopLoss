@@ -46,7 +46,7 @@ export const RainbowKitCustomConnectButton = () => {
                 );
               }
 
-              if (chain.unsupported || chain.id !== configuredNetwork.id) {
+              if (chain.unsupported) {
                 return (
                   <div className="dropdown dropdown-end">
                     <label tabIndex={0} className="btn btn-error btn-sm dropdown-toggle">
