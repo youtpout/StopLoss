@@ -26,8 +26,11 @@ const Home: NextPage = () => {
             <PairChoice selectedPair={setPair}></PairChoice>
           </div>
         </div>
-        <div className="home-menu">
-          <TradeInfo pair={undefined} buy={undefined}></TradeInfo>
+        <div className="home-content">
+          <div className="home-menu">
+            <TradeInfo pair={undefined} buy={undefined}></TradeInfo>
+          </div>
+          <div>{JSON.stringify(pair)}</div>
         </div>
       </div>
     </>
