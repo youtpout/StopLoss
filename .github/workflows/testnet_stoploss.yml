@@ -28,7 +28,7 @@ jobs:
 
       - uses: montudor/action-zip@v1
         with:
-          args: zip -qq -r result.zip dist
+          args: zip -qq -r ./result.zip ./dist
   
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
@@ -52,7 +52,7 @@ jobs:
 
       - uses: montudor/action-zip@v1
         with:
-          args: zip -qq -r result.zip .
+          args: zip -qq -r ./result.zip .
     
 
       - name: 'Deploy to Azure Web App'
