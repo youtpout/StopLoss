@@ -1,0 +1,29 @@
+specVersion: 0.0.5
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: StopLoss
+    network: optimism-goerli
+    source:
+      address: "0xDeEB811d79382b42eE60EDB8a204F5949d1169f4"
+      abi: StopLoss
+      startBlock: 13203640
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Order   
+        - Counter
+      abis:
+        - name: StopLoss
+          file: ./abis/StopLoss.json
+      eventHandlers:
+        - event: Add(indexed address,indexed address,indexed address,uint256,(uint8,uint8,address,uint32,uint16,uint128,uint128,uint128,uint128))
+          handler: handleAdd
+        - event: Cancel(indexed address,indexed address,indexed address,uint256,(uint8,uint8,address,uint32,uint16,uint128,uint128,uint128,uint128))
+          handler: handleCancel
+        - event: Execute(indexed address,indexed address,indexed address,uint256,uint256,(uint8,uint8,address,uint32,uint16,uint128,uint128,uint128,uint128),(uint8,uint8,address,uint32,uint16,uint128,uint128,uint128,uint128))
+          handler: handleExecute       
+      file: ./src/stop-loss.ts

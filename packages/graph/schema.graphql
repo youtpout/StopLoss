@@ -1,0 +1,28 @@
+type Order @entity{
+  id: Bytes!
+  indexAll: BigInt! # uint256
+  sender: Bytes! # address
+  sellToken: Bytes! # address
+  buyToken: Bytes! # address
+  index: BigInt! # uint256
+  order_orderStatus: Int! # uint8
+  order_orderType: Int! # uint8
+  order_buyer: Bytes! # address
+  order_timestamp: BigInt! # uint32
+  order_triggerPercent: Int! # uint16
+  order_sellAmount: BigInt! # uint128
+  order_buyAmount: BigInt! # uint128
+  order_sellToComplete: BigInt! # uint128
+  order_buyToComplete: BigInt! # uint128
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type Counter @entity{
+  id: Bytes!
+  all: BigInt! # uint256
+  active: BigInt! # uint256
+  sold: BigInt! # uint256
+  canceled: BigInt! # uint256
+}

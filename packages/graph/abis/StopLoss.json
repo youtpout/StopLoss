@@ -1,0 +1,733 @@
+[
+  { "inputs": [], "name": "CantCancel", "type": "error" },
+  { "inputs": [], "name": "CantDepositETH", "type": "error" },
+  { "inputs": [], "name": "CantExecuteOrderA", "type": "error" },
+  { "inputs": [], "name": "CantExecuteOrderB", "type": "error" },
+  { "inputs": [], "name": "IncompatibleToken", "type": "error" },
+  { "inputs": [], "name": "InvalidToken", "type": "error" },
+  { "inputs": [], "name": "NotAContract", "type": "error" },
+  { "inputs": [], "name": "NotSupported", "type": "error" },
+  { "inputs": [], "name": "OrderAIncorrectlyFulfilled", "type": "error" },
+  { "inputs": [], "name": "OrderBIncorrectlyFulfilled", "type": "error" },
+  { "inputs": [], "name": "OrderNotActive", "type": "error" },
+  { "inputs": [], "name": "PriceOverflow", "type": "error" },
+  { "inputs": [], "name": "PriceTooHigh", "type": "error" },
+  { "inputs": [], "name": "SameBuyer", "type": "error" },
+  { "inputs": [], "name": "TriggerTooHigh", "type": "error" },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sellToken",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "buyToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum StopLoss.OrderStatus",
+            "name": "orderStatus",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum StopLoss.OrderType",
+            "name": "orderType",
+            "type": "uint8"
+          },
+          { "internalType": "address", "name": "buyer", "type": "address" },
+          { "internalType": "uint32", "name": "timestamp", "type": "uint32" },
+          {
+            "internalType": "uint16",
+            "name": "triggerPercent",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint128",
+            "name": "sellAmount",
+            "type": "uint128"
+          },
+          { "internalType": "uint128", "name": "buyAmount", "type": "uint128" },
+          {
+            "internalType": "uint128",
+            "name": "sellToComplete",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "buyToComplete",
+            "type": "uint128"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct StopLoss.Order",
+        "name": "order",
+        "type": "tuple"
+      }
+    ],
+    "name": "Add",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sellToken",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "buyToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum StopLoss.OrderStatus",
+            "name": "orderStatus",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum StopLoss.OrderType",
+            "name": "orderType",
+            "type": "uint8"
+          },
+          { "internalType": "address", "name": "buyer", "type": "address" },
+          { "internalType": "uint32", "name": "timestamp", "type": "uint32" },
+          {
+            "internalType": "uint16",
+            "name": "triggerPercent",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint128",
+            "name": "sellAmount",
+            "type": "uint128"
+          },
+          { "internalType": "uint128", "name": "buyAmount", "type": "uint128" },
+          {
+            "internalType": "uint128",
+            "name": "sellToComplete",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "buyToComplete",
+            "type": "uint128"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct StopLoss.Order",
+        "name": "order",
+        "type": "tuple"
+      }
+    ],
+    "name": "Cancel",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sellToken",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "buyToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "indexA",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "indexB",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum StopLoss.OrderStatus",
+            "name": "orderStatus",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum StopLoss.OrderType",
+            "name": "orderType",
+            "type": "uint8"
+          },
+          { "internalType": "address", "name": "buyer", "type": "address" },
+          { "internalType": "uint32", "name": "timestamp", "type": "uint32" },
+          {
+            "internalType": "uint16",
+            "name": "triggerPercent",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint128",
+            "name": "sellAmount",
+            "type": "uint128"
+          },
+          { "internalType": "uint128", "name": "buyAmount", "type": "uint128" },
+          {
+            "internalType": "uint128",
+            "name": "sellToComplete",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "buyToComplete",
+            "type": "uint128"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct StopLoss.Order",
+        "name": "orderA",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum StopLoss.OrderStatus",
+            "name": "orderStatus",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum StopLoss.OrderType",
+            "name": "orderType",
+            "type": "uint8"
+          },
+          { "internalType": "address", "name": "buyer", "type": "address" },
+          { "internalType": "uint32", "name": "timestamp", "type": "uint32" },
+          {
+            "internalType": "uint16",
+            "name": "triggerPercent",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint128",
+            "name": "sellAmount",
+            "type": "uint128"
+          },
+          { "internalType": "uint128", "name": "buyAmount", "type": "uint128" },
+          {
+            "internalType": "uint128",
+            "name": "sellToComplete",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "buyToComplete",
+            "type": "uint128"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct StopLoss.Order",
+        "name": "orderB",
+        "type": "tuple"
+      }
+    ],
+    "name": "Execute",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "previousAdminRole",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "newAdminRole",
+        "type": "bytes32"
+      }
+    ],
+    "name": "RoleAdminChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "RoleGranted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "RoleRevoked",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "CONTROLLER_ROLE",
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "DEFAULT_ADMIN_ROLE",
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "PERCENT_DIVISOR",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "PRICE_DECIMALS",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "WETH",
+    "outputs": [
+      { "internalType": "contract IWETH", "name": "", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum StopLoss.OrderType",
+        "name": "orderType",
+        "type": "uint8"
+      },
+      { "internalType": "address", "name": "sellToken", "type": "address" },
+      { "internalType": "address", "name": "buyToken", "type": "address" },
+      { "internalType": "uint128", "name": "sellAmount", "type": "uint128" },
+      { "internalType": "uint128", "name": "buyAmount", "type": "uint128" },
+      { "internalType": "uint16", "name": "triggerPercent", "type": "uint16" }
+    ],
+    "name": "addOrder",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "allOrders",
+    "outputs": [
+      { "internalType": "address", "name": "sellToken", "type": "address" },
+      { "internalType": "address", "name": "buyToken", "type": "address" },
+      { "internalType": "uint256", "name": "index", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "sellToken", "type": "address" },
+      { "internalType": "address", "name": "buyToken", "type": "address" },
+      { "internalType": "uint256", "name": "indexOrder", "type": "uint256" }
+    ],
+    "name": "canExecuteOrder",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "sellToken", "type": "address" },
+      { "internalType": "address", "name": "buyToken", "type": "address" },
+      { "internalType": "uint256", "name": "index", "type": "uint256" }
+    ],
+    "name": "cancelOrder",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "countAllOrders",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "sellToken", "type": "address" },
+      { "internalType": "address", "name": "buyToken", "type": "address" }
+    ],
+    "name": "countOrders",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "sellToken", "type": "address" },
+      { "internalType": "address", "name": "buyToken", "type": "address" },
+      { "internalType": "uint256", "name": "indexA", "type": "uint256" },
+      { "internalType": "uint256", "name": "indexB", "type": "uint256" }
+    ],
+    "name": "executeOrder",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "cursor", "type": "uint256" },
+      { "internalType": "uint256", "name": "howMany", "type": "uint256" }
+    ],
+    "name": "fetchPageOrders",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "sellToken", "type": "address" },
+          { "internalType": "address", "name": "buyToken", "type": "address" },
+          { "internalType": "uint256", "name": "index", "type": "uint256" },
+          {
+            "components": [
+              {
+                "internalType": "enum StopLoss.OrderStatus",
+                "name": "orderStatus",
+                "type": "uint8"
+              },
+              {
+                "internalType": "enum StopLoss.OrderType",
+                "name": "orderType",
+                "type": "uint8"
+              },
+              { "internalType": "address", "name": "buyer", "type": "address" },
+              {
+                "internalType": "uint32",
+                "name": "timestamp",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint16",
+                "name": "triggerPercent",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint128",
+                "name": "sellAmount",
+                "type": "uint128"
+              },
+              {
+                "internalType": "uint128",
+                "name": "buyAmount",
+                "type": "uint128"
+              },
+              {
+                "internalType": "uint128",
+                "name": "sellToComplete",
+                "type": "uint128"
+              },
+              {
+                "internalType": "uint128",
+                "name": "buyToComplete",
+                "type": "uint128"
+              }
+            ],
+            "internalType": "struct StopLoss.Order",
+            "name": "order",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct StopLoss.OrderData[]",
+        "name": "values",
+        "type": "tuple[]"
+      },
+      { "internalType": "uint256", "name": "newCursor", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "sellToken", "type": "address" },
+      { "internalType": "address", "name": "buyToken", "type": "address" },
+      { "internalType": "uint256", "name": "index", "type": "uint256" }
+    ],
+    "name": "getOrder",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "enum StopLoss.OrderStatus",
+            "name": "orderStatus",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum StopLoss.OrderType",
+            "name": "orderType",
+            "type": "uint8"
+          },
+          { "internalType": "address", "name": "buyer", "type": "address" },
+          { "internalType": "uint32", "name": "timestamp", "type": "uint32" },
+          {
+            "internalType": "uint16",
+            "name": "triggerPercent",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint128",
+            "name": "sellAmount",
+            "type": "uint128"
+          },
+          { "internalType": "uint128", "name": "buyAmount", "type": "uint128" },
+          {
+            "internalType": "uint128",
+            "name": "sellToComplete",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "buyToComplete",
+            "type": "uint128"
+          }
+        ],
+        "internalType": "struct StopLoss.Order",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "role", "type": "bytes32" }
+    ],
+    "name": "getRoleAdmin",
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+      { "internalType": "address", "name": "account", "type": "address" }
+    ],
+    "name": "grantRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+      { "internalType": "address", "name": "account", "type": "address" }
+    ],
+    "name": "hasRole",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_priceOracle", "type": "address" },
+      { "internalType": "address", "name": "_WETH", "type": "address" }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "name": "orders",
+    "outputs": [
+      {
+        "internalType": "enum StopLoss.OrderStatus",
+        "name": "orderStatus",
+        "type": "uint8"
+      },
+      {
+        "internalType": "enum StopLoss.OrderType",
+        "name": "orderType",
+        "type": "uint8"
+      },
+      { "internalType": "address", "name": "buyer", "type": "address" },
+      { "internalType": "uint32", "name": "timestamp", "type": "uint32" },
+      { "internalType": "uint16", "name": "triggerPercent", "type": "uint16" },
+      { "internalType": "uint128", "name": "sellAmount", "type": "uint128" },
+      { "internalType": "uint128", "name": "buyAmount", "type": "uint128" },
+      {
+        "internalType": "uint128",
+        "name": "sellToComplete",
+        "type": "uint128"
+      },
+      { "internalType": "uint128", "name": "buyToComplete", "type": "uint128" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "priceOracle",
+    "outputs": [
+      { "internalType": "contract IPriceOracle", "name": "", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+      { "internalType": "address", "name": "account", "type": "address" }
+    ],
+    "name": "renounceRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+      { "internalType": "address", "name": "account", "type": "address" }
+    ],
+    "name": "revokeRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stopLossMinimal",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes4", "name": "interfaceId", "type": "bytes4" }
+    ],
+    "name": "supportsInterface",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_priceOracle", "type": "address" }
+    ],
+    "name": "updatePriceOracle",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

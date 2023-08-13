@@ -1,0 +1,8 @@
+{
+  "optimism-goerli": {
+    "StopLoss": {
+      "address": "0x0baf2a63a033c5ce873f5d8c12390b541b20d909",
+      "startBlock": 13203638
+    }
+  }
+}
