@@ -27,7 +27,7 @@ jobs:
           yarn next:build 
 
       - name: Tar files
-        run: tar -cvf /tmp/build.tar .
+        run: tar -cvf /tmp/build.tar ./packages/nextjs/build
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
