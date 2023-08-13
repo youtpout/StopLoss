@@ -15,7 +15,12 @@ import {
 } from "../generated/schema"
 
 export function handleAdd(event: AddEvent): void {
-  let index = updateCount(event.params.order.orderType,event.params.order.orderStatus);
+  updateCount(event.params.order.orderType,event.params.order.orderStatus);
+  let entityAll = Counter.load(Bytes.fromI32(999));
+  let index = BigInt.fromI32(0);
+  if(entityAll){
+    index = entityAll.all;
+  }
   
   let hash = getHash(event.params.sellToken,event.params.buyToken,event.params.index);
   let entity = new Order(hash);
@@ -40,7 +45,8 @@ export function handleAdd(event: AddEvent): void {
 function getHash(sellToken:Address,buyToken:Address,index:BigInt) :Bytes{
  return Bytes.fromHexString(sellToken.toHexString())
   .concat(Bytes.fromHexString(buyToken.toHexString()))
-  .concat(Bytes.fromHexString(index.toHexString()))
+  .concat(Bytes.fromHexString(index.toHexString()+"1"))
+// +1 can't hash 0 index
 }
 
 export function handleCancel(event: CancelEvent): void {
@@ -74,11 +80,15 @@ export function handleExecute(event: ExecuteEvent): void {
 }
 
 
-function updateCount(type: i32,status: i32): BigInt {  
+function updateCount(orderType: i32,status: i32) :void {  
   // get counter by type and for all
-  let entity = Counter.load(Bytes.fromI32(type));
+  let entity = Counter.load(Bytes.fromI32(orderType));
   if (entity == null) {
-    entity = new Counter(Bytes.fromI32(type));
+    entity = new Counter(Bytes.fromI32(orderType));
+    entity.all = BigInt.fromI32(0);
+    entity.active = BigInt.fromI32(0);
+    entity.canceled = BigInt.fromI32(0);
+    entity.sold = BigInt.fromI32(0);
   }
  
   saveCounter(entity,status);
@@ -86,10 +96,13 @@ function updateCount(type: i32,status: i32): BigInt {
   let entityAll = Counter.load(Bytes.fromI32(999));
   if (entityAll == null) {
     entityAll = new Counter(Bytes.fromI32(999));
+    entityAll.all = BigInt.fromI32(0);
+    entityAll.active = BigInt.fromI32(0);
+    entityAll.canceled = BigInt.fromI32(0);
+    entityAll.sold = BigInt.fromI32(0);
   }
+  let index = entityAll.all;
   saveCounter(entityAll,status);
-
-  return entityAll.all;
 }
 
 function saveCounter(entity:Counter, status:i32):void{
