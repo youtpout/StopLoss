@@ -108,6 +108,16 @@ const config: HardhatUserConfig = {
       accounts: [deployerPrivateKey],
       gasPrice: 1000000000,
     },
+    zoraGoerli: {
+      url: "https://testnet.rpc.zora.energy/",
+      accounts: [deployerPrivateKey],
+    },
+    modeSepolia: {
+      url: "https://sepolia.mode.network",
+      accounts: [deployerPrivateKey],
+      chainId: 919,
+      gasPrice: 1500000008,
+    },
   },
   etherscan: {
     apiKey: etherscanApiKey,
@@ -118,6 +128,22 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: "https://api-goerli.basescan.org/api",
           browserURL: "https://goerli.basescan.org",
+        },
+      },
+      {
+        network: "zora-goerli",
+        chainId: 999,
+        urls: {
+          apiURL: "https://testnet.explorer.zora.energy/api",
+          browserURL: "https://testnet.explorer.zora.energy",
+        },
+      },
+      {
+        network: "mode-sepolia",
+        chainId: 919,
+        urls: {
+          apiURL: "https://sepolia.explorer.mode.network/api",
+          browserURL: "https://sepolia.explorer.mode.network/",
         },
       },
     ],

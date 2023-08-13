@@ -56,6 +56,61 @@ npx hardhat verify --network baseGoerli 0xb2b4bca5393aacff636df436172b256b6d4325
 
 npx hardhat verify --network baseGoerli 0x13222c48eed0fecfce16aa76670d2cbb7f7b0b6f
 
+##  Zora testnet
+
+npx hardhat run ./scripts/deploy-base.ts --network zoraGoerli
+
+Fake Ether 0xd4Cd74C9f559332511Da67425DBf553d479f87F4
+
+Fake Link 0x0022BeD2FFcDd3E18150157Fd28d845844B76723
+
+Fake USDC 0x74D5dd44c1af45D29D3b226581D212911C332e1e
+
+Fake Bitcoin 0xcf987c488D5712ABb8689702D80970da674f31e3
+
+Manipulable Ether 0x27aaBBA64f8F8e2aAF8B5885bBDB9c17a604e71B
+
+PriceFeedEthMock 0x13222C48eed0feCfCe16aA76670D2Cbb7f7B0b6F
+
+price Oracle 0x8B3cdFd5fE121cF8d782399B3acd800c5e6e88e2
+
+StopLoss 0x6Ff9acFE5B23FA3a44C4979b5bd60A29B706C912
+
+npx hardhat verify --constructor-args scripts/arg-feth.ts --network zoraGoerli 0xd4Cd74C9f559332511Da67425DBf553d479f87F4 
+
+npx hardhat verify --network zoraGoerli 0x13222C48eed0feCfCe16aA76670D2Cbb7f7B0b6F 
+
+npx hardhat verify --network zoraGoerli 0x8B3cdFd5fE121cF8d782399B3acd800c5e6e88e2 
+
+npx hardhat verify --network zoraGoerli 0x6Ff9acFE5B23FA3a44C4979b5bd60A29B706C912 
+
+##  Mode testnet
+
+npx hardhat run ./scripts/deploy-base.ts --network modeSepolia
+
+Fake Ether 0x0022BeD2FFcDd3E18150157Fd28d845844B76723
+
+Fake Link 0x74D5dd44c1af45D29D3b226581D212911C332e1e
+
+Fake USDC 0xcf987c488D5712ABb8689702D80970da674f31e3
+
+Fake Bitcoin 0x27aaBBA64f8F8e2aAF8B5885bBDB9c17a604e71B
+
+Manipulable Ether 0x13222C48eed0feCfCe16aA76670D2Cbb7f7B0b6F
+
+PriceFeedEthMock 0xF824e867ae6e45f2556DEE10F7441e34AADB8188
+
+price Oracle 0x337BbD7c2b4D31d4431685b30B55735D8c0cc2B3
+
+StopLoss 0x91673a7567Ea046e98a8b909fF56f21b4E12eE40
+
+npx hardhat verify --constructor-args scripts/arg-feth.ts --network modeSepolia 0x0022BeD2FFcDd3E18150157Fd28d845844B76723 
+
+npx hardhat verify --network modeSepolia 0xF824e867ae6e45f2556DEE10F7441e34AADB8188 
+
+npx hardhat verify --network modeSepolia 0x337BbD7c2b4D31d4431685b30B55735D8c0cc2B3 
+
+npx hardhat verify --network modeSepolia 0x337BbD7c2b4D31d4431685b30B55735D8c0cc2B3 
 
 ### Subgraph
 
