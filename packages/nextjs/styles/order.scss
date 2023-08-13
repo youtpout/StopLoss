@@ -8,13 +8,13 @@
   width: 180px;
 
   &.green {
-    border-color: #3fb68b;
-    color: #3fb68b;
+    border-color: $green;
+    color: $green;
   }
 
   &.red {
-    border-color: #ff5353;
-    color: #ff5353;
+    border-color: $red;
+    color: $red;
   }
 
   &.not {
@@ -174,5 +174,15 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
+  }
+}
+
+.order-list {
+  padding: 10px;
+  .buy {
+    color: $green;
+  }
+  .sell {
+    color: $red;
   }
 }

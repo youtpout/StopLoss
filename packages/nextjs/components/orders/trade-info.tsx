@@ -24,7 +24,7 @@ export const TradeInfo = ({ pair }) => {
     if (chain && signer) {
       getAllowance().then;
     }
-  }, [chain, signer]);
+  }, [chain, signer, orderSell]);
 
   useEffect(() => {
     const calc = (limit * trigger) / 100;
@@ -79,14 +79,17 @@ export const TradeInfo = ({ pair }) => {
       const contractSelected = addresses.find(x => x.name === "Stop Loss");
       const address = contractSelected?.addresses?.find(x => x.chainId === chainId)?.address;
       const addressT0 = pair.token0?.addresses?.find(x => x.chainId === chainId)?.address;
+      const addressT1 = pair.token1?.addresses?.find(x => x.chainId === chainId)?.address;
       if (address && signer) {
-        const tokenContract = TestERC20__factory.connect(addressT0, signer);
+        const addressContract = orderSell ? addressT0 : addressT1;
+        const tokenContract = TestERC20__factory.connect(addressContract, signer);
         toast("Approving");
 
         const execute = await tokenContract.approve(address, ethers.constants.MaxUint256);
         await execute.wait();
 
         toast.success("Contract approved!");
+        await getAllowance();
       } else {
         toast.error("Maybe you are not connected");
       }
@@ -100,16 +103,26 @@ export const TradeInfo = ({ pair }) => {
       const contractSelected = addresses.find(x => x.name === "Stop Loss");
       const address = contractSelected?.addresses?.find(x => x.chainId === chainId)?.address;
       const addressT0 = pair.token0?.addresses?.find(x => x.chainId === chainId)?.address;
+      const addressT1 = pair.token1?.addresses?.find(x => x.chainId === chainId)?.address;
       if (address && signer) {
         const user = await signer.getAddress();
-        const tokenContract = TestERC20__factory.connect(addressT0, signer);
+        const addressContract = orderSell ? addressT0 : addressT1;
+        const tokenContract = TestERC20__factory.connect(addressContract, signer);
         const amountEth = ethers.utils.parseEther(amount.toString()) as BigNumber;
         const allowance = await tokenContract.allowance(user, address);
+        console.log("allowaance", { allowance, addressContract });
         setNeedApprove(amountEth.gt(allowance));
       }
     } catch (error) {
       console.error("get allowance", error);
     }
+  };
+
+  const formatNumber = (numberAmount: number) => {
+    return numberAmount
+      .toFixed(3)
+      .toString()
+      .replace(/\B(?=(\d{3})+(?!\d))/g, "'");
   };
 
   return (
@@ -156,7 +169,7 @@ export const TradeInfo = ({ pair }) => {
         </div>
 
         <div>
-          Total : {amount * limit} {pair?.token1.symbol}{" "}
+          Total : {formatNumber(amount * limit)} {pair?.token1.symbol}
         </div>
         {orderType === "StopLoss" && (
           <div>
@@ -173,7 +186,7 @@ export const TradeInfo = ({ pair }) => {
               {/* {trigger} % */}
             </div>
             <div className="trigger-price">
-              Trigger : {triggerPrice} {pair?.token1.symbol}
+              Trigger : {formatNumber(triggerPrice)} {pair?.token1.symbol}
             </div>
           </div>
         )}

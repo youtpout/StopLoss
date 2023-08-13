@@ -22,6 +22,12 @@ export const ListOrder = ({ pair }) => {
     }
   }, [chain, signer, pair]);
 
+  const fEth = addresses.find(x => x.symbol === "fEth");
+  const fLink = addresses.find(x => x.symbol === "fLink");
+  const fUSDC = addresses.find(x => x.symbol === "fUSDC");
+  const fBTC = addresses.find(x => x.symbol === "fBTC");
+  const mEth = addresses.find(x => x.symbol === "mEth");
+
   const getOrders = async () => {
     try {
       const contractSelected = addresses.find(x => x.name === "Stop Loss");
@@ -33,13 +39,22 @@ export const ListOrder = ({ pair }) => {
         const slContract = StopLoss__factory.connect(address, signer);
         // without subgraph
         const [orders, cursor] = await slContract.fetchPageOrders(0, 1000);
+        console.log("orders", orders);
         if (addressT0) {
-          const buy = orders.filter(x => x.buyToken.toLowerCase() === addressT0.toLowerCase());
-          setBuyList(orders.map(x => new OrderData(x)));
+          const buy = orders.filter(
+            x =>
+              x.buyToken.toLowerCase() === addressT0.toLowerCase() &&
+              x.sellToken.toLowerCase() == addressT1.toLowerCase(),
+          );
+          setBuyList(buy.map(x => new OrderData(x)));
         }
         if (addressT1) {
-          const sell = orders.filter(x => x.sellToken.toLowerCase() === addressT1.toLowerCase());
-          setSellList(sell);
+          const sell = orders.filter(
+            x =>
+              x.sellToken.toLowerCase() === addressT0.toLowerCase() &&
+              x.buyToken.toLowerCase() == addressT1.toLowerCase(),
+          );
+          setSellList(sell.map(x => new OrderData(x)));
         }
       }
     } catch (error) {
@@ -49,10 +64,19 @@ export const ListOrder = ({ pair }) => {
 
   return (
     <div className="order-list">
-      List
+      <div>
+        Pair {pair?.token0.name} - {pair?.token1.name}
+      </div>
       <ul>
         {buyList.map((el, index) => (
-          <li key={index}>{el.buyToken}</li>
+          <li className="buy" key={index}>
+            {el.buyAmount}
+          </li>
+        ))}
+        {sellList.map((el, index) => (
+          <li className="sell" key={index}>
+            {el.sellAmount}
+          </li>
         ))}
       </ul>
     </div>

@@ -22,6 +22,13 @@ export const MintToken = () => {
     getBalance().then();
   }, [chain, signer, token]);
 
+  const formatNumber = (numberAmount: any) => {
+    return parseFloat(numberAmount)?
+      .toFixed(3)
+      .toString()
+      .replace(/\B(?=(\d{3})+(?!\d))/g, "'");
+  };
+
   const fEth = addresses.find(x => x.symbol === "fEth");
   const fLink = addresses.find(x => x.symbol === "fLink");
   const fUSDC = addresses.find(x => x.symbol === "fUSDC");
@@ -90,7 +97,7 @@ export const MintToken = () => {
             Mint
           </button>
         </div>
-        <div>Actual balance : {balance}</div>
+        <div>Actual balance : {formatNumber(balance)}</div>
       </div>
     </div>
   );
