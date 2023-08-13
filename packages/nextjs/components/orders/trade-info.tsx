@@ -24,7 +24,7 @@ export const TradeInfo = ({ pair }) => {
     if (chain && signer) {
       getAllowance().then;
     }
-  }, [chain, signer, orderSell]);
+  }, [chain, signer, orderSell, pair]);
 
   useEffect(() => {
     const calc = (limit * trigger) / 100;
