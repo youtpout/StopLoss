@@ -25,15 +25,11 @@ jobs:
         run: |
           yarn install --immutable
           yarn next:build 
-
-      - uses: montudor/action-zip@v1
-        with:
-          args: zip -qq -r ./result.zip .
   
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
-          name: result.zip
+          name: node-app
           path: .
           
 
@@ -48,11 +44,7 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v2
         with:
-          name: result.zip
-
-      - uses: montudor/action-zip@v1
-        with:
-          args: zip -qq -r ./result.zip .
+          name: node-app
     
 
       - name: 'Deploy to Azure Web App'
