@@ -1,8 +1,12 @@
+import { useEffect, useState } from "react";
+import { gql } from "@apollo/client";
+import { useNetwork } from "wagmi";
 import { hardhat } from "wagmi/chains";
 import { CurrencyDollarIcon } from "@heroicons/react/24/outline";
 import { HeartIcon } from "@heroicons/react/24/outline";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { Faucet } from "~~/components/scaffold-eth";
+import client from "~~/services/apollo";
 import { useGlobalState } from "~~/services/store/store";
 import { getTargetNetwork } from "~~/utils/scaffold-eth";
 
@@ -11,6 +15,42 @@ import { getTargetNetwork } from "~~/utils/scaffold-eth";
  */
 export const Footer = () => {
   const nativeCurrencyPrice = useGlobalState(state => state.nativeCurrencyPrice);
+  const [counters, setCounters] = useState();
+  const [chainId, setChainId] = useState(420);
+  const { chain } = useNetwork();
+
+  useEffect(() => {
+    // update data every 10 seconds
+    const interval = setInterval(() => {
+      countOrders();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    setChainId(chain?.id || 420);
+  }, [chain]);
+
+  const countOrders = async () => {
+    const { data } = await client.query({
+      query: gql`
+        query MyQuery {
+          counters {
+            id
+            all
+            active
+            canceled
+            sold
+          }
+        }
+      `,
+    });
+
+    let count = data?.counters?.find(x => x?.id === "0xe7030000");
+    console.log("data", count);
+    setCounters(count);
+  };
 
   return (
     <div className="min-h-0 p-5 mb-11 lg:mb-0">
@@ -31,39 +71,14 @@ export const Footer = () => {
       <div className="w-full">
         <ul className="menu menu-horizontal w-full">
           <div className="flex justify-center items-center gap-2 text-sm w-full">
-            <div>
-              <a
-                href="https://github.com/scaffold-eth/se-2"
-                target="_blank"
-                rel="noreferrer"
-                className="underline underline-offset-2"
-              >
-                Fork me
-              </a>
-            </div>
-            <span>·</span>
-            <div>
-              Built with <HeartIcon className="inline-block h-4 w-4" /> at 🏰{" "}
-              <a
-                href="https://buidlguidl.com/"
-                target="_blank"
-                rel="noreferrer"
-                className="underline underline-offset-2"
-              >
-                BuidlGuidl
-              </a>
-            </div>
-            <span>·</span>
-            <div>
-              <a
-                href="https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA"
-                target="_blank"
-                rel="noreferrer"
-                className="underline underline-offset-2"
-              >
-                Support
-              </a>
-            </div>
+            {chain?.id === 420 && (
+              <div className="stat-orders">
+                <span>Total Orders : {counters?.all}</span>
+                <span>Active Orders : {counters?.active}</span>
+                <span>Canceled Orders : {counters?.canceled}</span>
+                <span>Executed Orders : {counters?.sold}</span>
+              </div>
+            )}
           </div>
         </ul>
       </div>
