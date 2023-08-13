@@ -178,11 +178,39 @@
 }
 
 .order-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   padding: 10px;
+  justify-content: flex-start;
+  align-items: flex-start;
   .buy {
     color: $green;
   }
   .sell {
     color: $red;
+  }
+
+  table {
+    width: 100%;
+    text-align: center;
+    display: table;
+
+    th {
+      font-size: 1rem;
+      font-weight: normal;
+      color: $transparent;
+
+      .info {
+        font-size: 0.8rem;
+        padding: 2px 5px;
+        background: rgba(100, 100, 100, 0.2);
+        color: white;
+      }
+    }
+
+    .s-button {
+      width: 100px;
+    }
   }
 }

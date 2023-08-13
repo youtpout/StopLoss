@@ -67,4 +67,10 @@ p {
   .home-status {
     padding: 10px;
   }
+
+  .home-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
 }

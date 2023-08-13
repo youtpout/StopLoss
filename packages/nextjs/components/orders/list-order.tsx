@@ -11,6 +11,7 @@ export const ListOrder = ({ pair }) => {
   const [buyList, setBuyList] = useState<OrderData[]>([]);
   const [sellList, setSellList] = useState<OrderData[]>([]);
   const [chainId, setChainId] = useState(420);
+  const [user, setUser] = useState("");
   const { chain } = useNetwork();
   const signer = useEthersSigner();
 
@@ -19,6 +20,10 @@ export const ListOrder = ({ pair }) => {
 
     if (chain && signer) {
       getOrders().then;
+    }
+
+    if (signer) {
+      signer.getAddress().then(r => setUser(r));
     }
   }, [chain, signer, pair]);
 
@@ -35,7 +40,6 @@ export const ListOrder = ({ pair }) => {
       const addressT0 = pair.token0?.addresses?.find(x => x.chainId === chainId)?.address;
       const addressT1 = pair.token1?.addresses?.find(x => x.chainId === chainId)?.address;
       if (address && signer) {
-        const user = await signer.getAddress();
         const slContract = StopLoss__factory.connect(address, signer);
         // without subgraph
         const [orders, cursor] = await slContract.fetchPageOrders(0, 1000);
@@ -62,23 +66,90 @@ export const ListOrder = ({ pair }) => {
     }
   };
 
+  function getDate(timestamp: number) {
+    // timestamp in second convert to ms
+    return new Date(timestamp * 1000).toLocaleString();
+  }
+
+  function getStatus(orderStatus: number) {
+    switch (orderStatus) {
+      case 1:
+        return "Active";
+      case 2:
+        return "Canceled";
+      case 3:
+        return "Executed";
+      default:
+        return "Unknow";
+    }
+  }
+
+  function getType(orderType: number) {
+    switch (orderType) {
+      case 1:
+        return "Market";
+      case 2:
+        return "Limit";
+      case 3:
+        return "StopLoss";
+      case 4:
+        return "TrailingStop";
+      default:
+        return "Unknow";
+    }
+  }
+
+  function isMine(buyer: string) {
+    return user?.toLowerCase() === buyer?.toLowerCase();
+  }
+
   return (
     <div className="order-list">
       <div>
         Pair {pair?.token0.name} - {pair?.token1.name}
       </div>
-      <ul>
+      <table>
+        <tr>
+          <th>Status</th>
+          <th>Type</th>
+          <th>
+            Size <span className="info">{pair?.token0.symbol}</span>
+          </th>
+          <th>
+            Price <span className="info">{pair?.token1.symbol}</span>
+          </th>
+          <th>
+            Trigger <span className="info">{pair?.token1.symbol}</span>
+          </th>
+          <th>Date</th>
+          <th>Mine</th>
+          <th>Action</th>
+        </tr>
         {buyList.map((el, index) => (
-          <li className="buy" key={index}>
-            {el.buyAmount}
-          </li>
+          <tr className="buy" key={index}>
+            <td>{getStatus(el.orderStatus)}</td>
+            <td>{getType(el.orderType)}</td>
+            <td>{el.buyAmount}</td>
+            <td>{el.sellAmount}</td>
+            <td>{el.triggerPercent}</td>
+            <td>{getDate(el.timestamp)}</td>
+            <td>{isMine(el.buyer) ? "✓" : "-"}</td>
+            <td>{isMine(el.buyer) && el.orderStatus === 1 && <button className="s-button">Cancel</button>}</td>
+          </tr>
         ))}
         {sellList.map((el, index) => (
-          <li className="sell" key={index}>
-            {el.sellAmount}
-          </li>
+          <tr className="sell" key={index}>
+            <td>{getStatus(el.orderStatus)}</td>
+            <td>{getType(el.orderType)}</td>
+            <td>{el.sellAmount}</td>
+            <td>{el.buyAmount}</td>
+            <td>{el.triggerPercent}</td>
+            <td>{getDate(el.timestamp)}</td>
+            <td>{isMine(el.buyer) ? "✓" : "-"}</td>
+            <td>{isMine(el.buyer) && el.orderStatus === 1 && <button className="s-button">Cancel</button>}</td>
+          </tr>
         ))}
-      </ul>
+      </table>
     </div>
   );
 };

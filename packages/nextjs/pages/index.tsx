@@ -53,7 +53,7 @@ const Home: NextPage = () => {
             <MintToken></MintToken>
           </div>
 
-          <div>
+          <div className="home-panel">
             <ListOrder pair={pair}></ListOrder>
           </div>
         </div>
