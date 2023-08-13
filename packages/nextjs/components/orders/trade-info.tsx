@@ -46,13 +46,14 @@ export const TradeInfo = ({ pair }) => {
       if (address && signer) {
         const stopLossContract = StopLoss__factory.connect(address, signer);
         const amountEth = ethers.utils.parseEther(amount);
-        const limitEth = ethers.utils.parseEther(limit);
+        const total = limit * amount;
+        const totalEth = ethers.utils.parseEther(total.toString());
 
         const orderTypeEnum = orderType === "Limit" ? 2 : 3;
         const sellToken = orderSell ? addressT0 : addressT1;
         const buyToken = orderSell ? addressT1 : addressT0;
-        const sellAmount = orderSell ? amountEth : limitEth;
-        const buyAmount = orderSell ? limitEth : amountEth;
+        const sellAmount = orderSell ? amountEth : totalEth;
+        const buyAmount = orderSell ? totalEth : amountEth;
         const triggerPercent = trigger * 100;
         toast("Adding");
         const execute = await stopLossContract.addOrder(

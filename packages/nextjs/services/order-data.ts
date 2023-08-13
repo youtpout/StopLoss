@@ -24,9 +24,9 @@ export class OrderData {
     this.buyer = order.order.buyer;
     this.timestamp = order.order.timestamp;
     this.triggerPercent = order.order.triggerPercent;
-    this.sellAmount = ethers.utils.formatEther(order.order.sellAmount);
-    this.buyAmount = ethers.utils.formatEther(order.order.buyAmount);
-    this.sellToComplete = ethers.utils.formatEther(order.order.sellToComplete);
-    this.buyToComplete = ethers.utils.formatEther(order.order.buyToComplete);
+    this.sellAmount = parseFloat(ethers.utils.formatEther(order.order.sellAmount));
+    this.buyAmount = parseFloat(ethers.utils.formatEther(order.order.buyAmount));
+    this.sellToComplete = parseFloat(ethers.utils.formatEther(order.order.sellToComplete));
+    this.buyToComplete = parseFloat(ethers.utils.formatEther(order.order.buyToComplete));
   }
 }

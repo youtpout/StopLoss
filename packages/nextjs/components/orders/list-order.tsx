@@ -130,7 +130,7 @@ export const ListOrder = ({ pair }) => {
             <td>{getStatus(el.orderStatus)}</td>
             <td>{getType(el.orderType)}</td>
             <td>{el.buyAmount}</td>
-            <td>{el.sellAmount}</td>
+            <td>{el.sellAmount / el.buyAmount}</td>
             <td>{el.triggerPercent}</td>
             <td>{getDate(el.timestamp)}</td>
             <td>{isMine(el.buyer) ? "✓" : "-"}</td>
@@ -142,7 +142,7 @@ export const ListOrder = ({ pair }) => {
             <td>{getStatus(el.orderStatus)}</td>
             <td>{getType(el.orderType)}</td>
             <td>{el.sellAmount}</td>
-            <td>{el.buyAmount}</td>
+            <td>{el.buyAmount / el.sellAmount}</td>
             <td>{el.triggerPercent}</td>
             <td>{getDate(el.timestamp)}</td>
             <td>{isMine(el.buyer) ? "✓" : "-"}</td>
