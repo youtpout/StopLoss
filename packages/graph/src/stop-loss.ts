@@ -34,79 +34,43 @@ export function handleAdd(event: AddEvent): void {
   entity.order_sellToComplete = event.params.order.sellToComplete
   entity.order_buyToComplete = event.params.order.buyToComplete
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
   entity.save()
 }
 
 function getHash(sellToken:Address,buyToken:Address,index:BigInt) :Bytes{
-  return Bytes.fromHexString(sellToken.toHexString())
+ return Bytes.fromHexString(sellToken.toHexString())
   .concat(Bytes.fromHexString(buyToken.toHexString()))
-  .concat(Bytes.fromBigInt(index));
+  .concat(Bytes.fromHexString(index.toHexString()))
 }
 
 export function handleCancel(event: CancelEvent): void {
-  let hash = getHash(event.params.sellToken,event.params.buyToken,event.params.index);
+  let hash = getHash(event.params.sellToken,event.params.buyToken,event.params.index)
 
-  let entity = Order.load(hash)!;
+  let entity = Order.load(hash)!
 
-  entity.sender = event.params.sender
-  entity.sellToken = event.params.sellToken
-  entity.buyToken = event.params.buyToken
-  entity.index = event.params.index
   entity.order_orderStatus = event.params.order.orderStatus
-  entity.order_orderType = event.params.order.orderType
-  entity.order_buyer = event.params.order.buyer
-  entity.order_timestamp = event.params.order.timestamp
-  entity.order_triggerPercent = event.params.order.triggerPercent
-  entity.order_sellAmount = event.params.order.sellAmount
-  entity.order_buyAmount = event.params.order.buyAmount
   entity.order_sellToComplete = event.params.order.sellToComplete
   entity.order_buyToComplete = event.params.order.buyToComplete
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
 
   entity.save()
 }
 
 export function handleExecute(event: ExecuteEvent): void {
-  let hash = getHash(event.params.sellToken,event.params.buyToken,event.params.index);
+  let hashA = getHash(event.params.sellToken,event.params.buyToken,event.params.indexA);
+  let hashB = getHash(event.params.sellToken,event.params.buyToken,event.params.indexB);
+  let entityA = Order.load(hashA)!;
+  let entityB = Order.load(hashB)!;
 
-  let entity = Order.load(hash)!;
+  entityA.order_orderStatus = event.params.orderA.orderStatus
+  entityA.order_sellToComplete = event.params.orderA.sellToComplete
+  entityA.order_buyToComplete = event.params.orderA.buyToComplete
 
-  entity.sender = event.params.sender
-  entity.sellToken = event.params.sellToken
-  entity.buyToken = event.params.buyToken
-  entity.indexA = event.params.indexA
-  entity.indexB = event.params.indexB
-  entity.orderA_orderStatus = event.params.orderA.orderStatus
-  entity.orderA_orderType = event.params.orderA.orderType
-  entity.orderA_buyer = event.params.orderA.buyer
-  entity.orderA_timestamp = event.params.orderA.timestamp
-  entity.orderA_triggerPercent = event.params.orderA.triggerPercent
-  entity.orderA_sellAmount = event.params.orderA.sellAmount
-  entity.orderA_buyAmount = event.params.orderA.buyAmount
-  entity.orderA_sellToComplete = event.params.orderA.sellToComplete
-  entity.orderA_buyToComplete = event.params.orderA.buyToComplete
-  entity.orderB_orderStatus = event.params.orderB.orderStatus
-  entity.orderB_orderType = event.params.orderB.orderType
-  entity.orderB_buyer = event.params.orderB.buyer
-  entity.orderB_timestamp = event.params.orderB.timestamp
-  entity.orderB_triggerPercent = event.params.orderB.triggerPercent
-  entity.orderB_sellAmount = event.params.orderB.sellAmount
-  entity.orderB_buyAmount = event.params.orderB.buyAmount
-  entity.orderB_sellToComplete = event.params.orderB.sellToComplete
-  entity.orderB_buyToComplete = event.params.orderB.buyToComplete
+  entityB.order_orderStatus = event.params.orderB.orderStatus
+  entityB.order_sellToComplete = event.params.orderB.sellToComplete
+  entityB.order_buyToComplete = event.params.orderB.buyToComplete
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
+  entityA.save()
+  entityB.save()
 }
 
 
@@ -128,7 +92,7 @@ function updateCount(type: i32,status: i32): BigInt {
   return entityAll.all;
 }
 
-function saveCounter(entity:Counter, status:i32){
+function saveCounter(entity:Counter, status:i32):void{
   switch (status) {
     case 1:
       entity.active = entity.active.plus(BigInt.fromI32(1));

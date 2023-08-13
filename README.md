@@ -21,3 +21,6 @@ npx hardhat verify --network optimismGoerli 0x13222C48eed0feCfCe16aA76670D2Cbb7f
 npm install -g @graphprotocol/graph-cli
 
 folder location /packages/graph
+
+execute installation on the folder
+```npm i```
