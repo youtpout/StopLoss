@@ -196,6 +196,22 @@
     text-align: center;
     display: table;
 
+    // hide column in small screen
+    @media (max-width: 600px) {
+      th:nth-child(6),
+      td:nth-child(6) {
+        display: none;
+      }
+      th:nth-child(7),
+      td:nth-child(7) {
+        display: none;
+      }
+      th:nth-child(5),
+      td:nth-child(5) {
+        display: none;
+      }
+    }
+
     tr {
       height: 35px;
     }

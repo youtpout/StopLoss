@@ -18,6 +18,10 @@ body {
   font-size: 1rem;
 }
 
+// .navbar {
+//   width: 100vw;
+// }
+
 h1,
 h2,
 h3,
@@ -54,12 +58,12 @@ p {
     display: flex;
     flex-direction: row;
     flex: 1;
+    flex-wrap: wrap;
   }
 
   .home-menu {
     display: flex;
     flex-direction: column;
-    width: 300px;
     flex-shrink: 0;
     border-right: $border-line;
   }
@@ -72,5 +76,11 @@ p {
     display: flex;
     flex-direction: column;
     flex: 1;
+  }
+}
+
+@media (max-width: 900px) {
+  .home-content {
+    flex-direction: column !important;
   }
 }
