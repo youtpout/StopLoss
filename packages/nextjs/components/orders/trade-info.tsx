@@ -23,6 +23,8 @@ export const TradeInfo = ({ pair }) => {
 
     if (chain && signer) {
       getAllowance().then;
+
+      console.log("chain id", chain.id);
     }
   }, [chain, signer, orderSell, pair]);
 
@@ -105,6 +107,7 @@ export const TradeInfo = ({ pair }) => {
       const address = contractSelected?.addresses?.find(x => x.chainId === chainId)?.address;
       const addressT0 = pair.token0?.addresses?.find(x => x.chainId === chainId)?.address;
       const addressT1 = pair.token1?.addresses?.find(x => x.chainId === chainId)?.address;
+      console.log("address", { address, addressT0, addressT1,signer });
       if (address && signer) {
         const user = await signer.getAddress();
         const addressContract = orderSell ? addressT0 : addressT1;

@@ -19,7 +19,12 @@ export const MintToken = () => {
   }, [chain]);
 
   useEffect(() => {
-    getBalance().then();
+     // update data every 5 seconds
+     const interval = setInterval(() => {   
+        getBalance().then;      
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, [chain, signer, token]);
 
   const formatNumber = (numberAmount: any) => {
