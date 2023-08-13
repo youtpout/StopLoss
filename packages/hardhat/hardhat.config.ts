@@ -103,19 +103,24 @@ const config: HardhatUserConfig = {
       url: `https://polygon-mumbai.g.alchemy.com/v2/${providerApiKey}`,
       accounts: [deployerPrivateKey],
     },
+    baseGoerli: {
+      url: "https://goerli.base.org",
+      accounts: [deployerPrivateKey],
+      gasPrice: 1000000000,
+    },
   },
   etherscan: {
     apiKey: etherscanApiKey,
-    // customChains: [
-    //   {
-    //     network: "optimismGoerli",
-    //     chainId: 420,
-    //     urls: {
-    //       apiURL: "https://api-goerli-optimistic.etherscan.io/",
-    //       browserURL: "https://goerli-optimistic.etherscan.io/",
-    //     },
-    //   },
-    // ],
+    customChains: [
+      {
+        network: "base-goerli",
+        chainId: 84531,
+        urls: {
+          apiURL: "https://api-goerli.basescan.org/api",
+          browserURL: "https://goerli.basescan.org",
+        },
+      },
+    ],
   },
 };
 
