@@ -26,11 +26,14 @@ jobs:
           yarn install --immutable
           yarn next:build 
 
+      - name: Tar files
+        run: tar -cvf build.tar /build
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: node-app
-          path: .
+          path: build.tar
           
 
   deploy:
@@ -44,8 +47,10 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v2
         with:
-          name: node-app
+          name: build.tar
     
+      - name: Tar files
+        run: tar -xvf build.tar 
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
