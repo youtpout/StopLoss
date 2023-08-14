@@ -1,5 +1,15 @@
 # 🏗 StopLoss
 
+[Superhack page](https://ethglobal.com/showcase/stop-loss-jc9j7)
+
+[Website](https://stoploss.azurewebsites.net/)
+
+Support Testnet for Optimism/base/zora/mode
+
+Use chainlink price feed on optimism/base for StopLoss (zora/mode supports only limit order actually)
+
+[Subgraph optimism ](https://api.thegraph.com/subgraphs/name/youtpout/stoplossgoptimism)
+
 ## Optimism testnet address
 
 Fake Ether 0xb7672932294f0650c8c668B8c834596A620d27c1

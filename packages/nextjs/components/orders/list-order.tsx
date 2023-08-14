@@ -177,7 +177,7 @@ export const ListOrder = ({ pair }) => {
           <tr className="buy" key={index}>
             <td>{getStatus(el.orderStatus)}</td>
             <td>{getType(el.orderType)}</td>
-            <td>{formatNumber(el.sellAmount)}</td>
+            <td>{formatNumber(el.buyAmount)}</td>
             <td>{formatNumber(el.sellAmount / el.buyAmount)}</td>
             <td>{getTrigger(false, el)}</td>
             <td>{getDate(el.timestamp)}</td>
