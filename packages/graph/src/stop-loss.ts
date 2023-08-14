@@ -50,6 +50,7 @@ function getHash(sellToken:Address,buyToken:Address,index:BigInt) :Bytes{
 }
 
 export function handleCancel(event: CancelEvent): void {
+  updateCount(event.params.order.orderType,event.params.order.orderStatus);
   let hash = getHash(event.params.sellToken,event.params.buyToken,event.params.index)
 
   let entity = Order.load(hash)!
@@ -66,6 +67,14 @@ export function handleExecute(event: ExecuteEvent): void {
   let hashB = getHash(event.params.sellToken,event.params.buyToken,event.params.indexB);
   let entityA = Order.load(hashA)!;
   let entityB = Order.load(hashB)!;
+
+  if(event.params.orderA.orderStatus === 3){
+    updateCount(event.params.orderA.orderType,event.params.orderA.orderStatus);
+  }
+
+  if(event.params.orderB.orderStatus === 3){
+    updateCount(event.params.orderB.orderType,event.params.orderB.orderStatus);
+  }
 
   entityA.order_orderStatus = event.params.orderA.orderStatus
   entityA.order_sellToComplete = event.params.orderA.sellToComplete

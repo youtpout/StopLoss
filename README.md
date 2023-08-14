@@ -110,7 +110,7 @@ npx hardhat verify --network modeSepolia 0xF824e867ae6e45f2556DEE10F7441e34AADB8
 
 npx hardhat verify --network modeSepolia 0x337BbD7c2b4D31d4431685b30B55735D8c0cc2B3 
 
-npx hardhat verify --network modeSepolia 0x337BbD7c2b4D31d4431685b30B55735D8c0cc2B3 
+npx hardhat verify --network modeSepolia 0x6Ff9acFE5B23FA3a44C4979b5bd60A29B706C912  
 
 ### Subgraph
 
