@@ -23,19 +23,20 @@ jobs:
 
       - name: npm install, build, and test
         run: |
+          cd packages/nextjs
           yarn install --immutable
-          yarn next:build 
+          yarn run build 
 
-      - name: tar file
+      - name: Zip all files for upload between jobs
         run: |
           cd packages/nextjs
-          tar -cvf /tmp/build.tar . 
+          zip /tmp/next.zip ./* .next --symlinks -r 
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: node-app
-          path: /tmp/build.tar
+          path: /tmp/next.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -49,12 +50,6 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: node-app
-      
-      - name: Tar files
-        run: tar -xvf build.tar 
-
-      - name: Delete tar file
-        run: rm build.tar
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
@@ -63,4 +58,7 @@ jobs:
           app-name: 'stoploss'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_148A51717B764309BFE023FD53C2647E }}
-          package: .
+          package: next.zip
+
+      - name: Delete tar file
+        run: rm next.zip
