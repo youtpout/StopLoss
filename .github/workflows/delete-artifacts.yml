@@ -7,7 +7,10 @@ jobs:
   delete-artifacts:
     runs-on: ubuntu-latest
     steps:
-      - uses: kolpav/purge-artifacts-action@v1
+      - uses: actions/checkout@v1
+      - name: Weekly Artifact Cleanup
+        uses: jimschubert/delete-artifacts-action@v1
         with:
           token: ${{ secrets.Token }}
-          expire-in: 1days # Setting this to 0 will delete all artifacts
+          log_level: 'error'
+          min_bytes: '0'

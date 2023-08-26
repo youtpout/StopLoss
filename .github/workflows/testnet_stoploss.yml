@@ -30,13 +30,13 @@ jobs:
         # IMPORTANT: .next is a hidden folder and will NOT be included in the zip unless we specify it
         run: |
           cd packages/nextjs
-          zip -0 next.zip ./* .next -qr  
+          zip next.zip ./* .next -qr  
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: node-app
-          path: next.zip
+          path: packages/nextjs/next.zip
 
   deploy:
     runs-on: ubuntu-latest
