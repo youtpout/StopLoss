@@ -26,14 +26,15 @@ jobs:
           yarn install --immutable
           yarn next:build 
 
-      - name: Tar files
-        run: tar -cvf build.tar ./packages/nextjs/
+      - name: Zip all files for upload between jobs
+        # IMPORTANT: .next is a hidden folder and will NOT be included in the zip unless we specify it
+        run: zip -0 next.zip ./* .next -qr  
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: node-app
-          path: build.tar
+          path: next.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -55,4 +56,4 @@ jobs:
           app-name: 'stoploss'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_D281958344E342ABBB7C5BAEA2A1EE65 }}
-          package: build.tar
+          package: next.zip
