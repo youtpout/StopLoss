@@ -26,8 +26,7 @@ jobs:
           yarn install --immutable
           yarn next:build 
 
-      - name: Zip all files for upload between jobs
-        # IMPORTANT: .next is a hidden folder and will NOT be included in the zip unless we specify it
+      - name: tar file
         run: |
           cd packages/nextjs
           tar -cvf /tmp/build.tar . 
@@ -53,6 +52,9 @@ jobs:
       
       - name: Tar files
         run: tar -xvf build.tar 
+
+      - name: Delete tar file
+        run: rm build.tar
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
