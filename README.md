@@ -34,7 +34,7 @@ npx hardhat verify --network optimismGoerli 0xdEa0F6213B346fBAB757E60949D819cD84
 
 npx hardhat verify --network optimismGoerli 0x0BAf2a63a033C5CE873f5D8c12390B541B20d909
 
-npx hardhat verify --network optimismGoerli 0x13222C48eed0feCfCe16aA76670D2Cbb7f7B0b6F
+npx hardhat verify --network optimismGoerli 0xf792600a564167a61feb0a96cf120113d6ccd066
 
 ##  Base testnet
 

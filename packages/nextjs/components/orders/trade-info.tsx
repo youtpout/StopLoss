@@ -26,7 +26,7 @@ export const TradeInfo = ({ pair }) => {
 
       console.log("chain id", chain.id);
     }
-  }, [chain, signer, orderSell, pair]);
+  }, [chain, signer, orderSell, pair, amount, limit]);
 
   useEffect(() => {
     const calc = (limit * trigger) / 100;
@@ -107,15 +107,20 @@ export const TradeInfo = ({ pair }) => {
       const address = contractSelected?.addresses?.find(x => x.chainId === chainId)?.address;
       const addressT0 = pair.token0?.addresses?.find(x => x.chainId === chainId)?.address;
       const addressT1 = pair.token1?.addresses?.find(x => x.chainId === chainId)?.address;
-      console.log("address", { address, addressT0, addressT1,signer });
+      console.log("address", { address, addressT0, addressT1, signer });
       if (address && signer) {
         const user = await signer.getAddress();
         const addressContract = orderSell ? addressT0 : addressT1;
         const tokenContract = TestERC20__factory.connect(addressContract, signer);
         const amountEth = ethers.utils.parseEther(amount.toString()) as BigNumber;
+        const totalEth = ethers.utils.parseEther((amount * limit).toString()) as BigNumber;
         const allowance = await tokenContract.allowance(user, address);
         console.log("allowaance", { allowance, addressContract });
-        setNeedApprove(amountEth.gt(allowance));
+        if (orderSell) {
+          setNeedApprove(amountEth.gt(allowance));
+        } else {
+          setNeedApprove(totalEth.gt(allowance));
+        }
       }
     } catch (error) {
       console.error("get allowance", error);

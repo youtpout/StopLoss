@@ -269,8 +269,8 @@ contract StopLoss is Initializable, AccessControlUpgradeable {
 		}
 
 		// we sold as order B price
-		uint256 soldPrice = (amountTransfered * orderB.buyAmount) /
-			orderB.sellAmount;
+		uint256 soldPrice = (amountTransfered / orderB.sellAmount) *
+			orderB.buyAmount;
 		if (soldPrice > type(uint128).max) {
 			revert PriceOverflow();
 		}

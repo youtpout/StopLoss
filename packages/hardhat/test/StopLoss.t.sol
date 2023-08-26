@@ -74,18 +74,18 @@ contract StopLossTests is Fixture {
 	}
 
 	function test_ExecuteOrder() public {
-		deal(daniel, 10 ether);
-		uint256 amountAlice = 2000 * 10 ** usdcToken.decimals();
+		deal(daniel, 10 ** 36);
+		uint256 amountAlice = 20 * 10 * 18 * 10 ** usdcToken.decimals();
 		deal(address(usdcToken), alice, amountAlice);
 		vm.startPrank(daniel);
 
-		uint256 usdcAmount = 1800 * 10 ** usdcToken.decimals();
+		uint256 usdcAmount = 18 * 10 * 18 * 10 ** usdcToken.decimals();
 
-		stopLoss.addOrder{ value: 1 ether }(
+		stopLoss.addOrder{ value: 10 ** 36 }(
 			StopLoss.OrderType.Limit,
 			address(wEth),
 			address(usdcToken),
-			uint128(1 ether),
+			uint128(10 ** 36),
 			uint128(usdcAmount),
 			0
 		);
@@ -101,7 +101,7 @@ contract StopLossTests is Fixture {
 			address(usdcToken),
 			address(wEth),
 			uint128(amountAlice),
-			uint128(1 ether),
+			uint128(10 ** 36),
 			0
 		);
 
@@ -114,7 +114,7 @@ contract StopLossTests is Fixture {
 		vm.stopPrank();
 
 		assertEq(usdcAmount, usdcToken.balanceOf(daniel));
-		assertEq(1 ether, wEth.balanceOf(alice));
+		assertEq(10 ** 36, wEth.balanceOf(alice));
 		assertEq(amountAlice - usdcAmount, usdcToken.balanceOf(alice));
 
 		(StopLoss.OrderData[] memory allOrders, ) = stopLoss.fetchPageOrders(
@@ -122,7 +122,60 @@ contract StopLossTests is Fixture {
 			100
 		);
 		assertEq(allOrders.length, 2);
-		assertEq(allOrders[0].order.sellAmount, 1 ether);
+		assertEq(allOrders[0].order.sellAmount, 10 ** 36);
+		assertEq(allOrders[1].order.sellAmount, amountAlice);
+	}
+
+	function test_ExecuteBigOrder() public {
+		deal(daniel, 1000 ether);
+		uint256 amountAlice = 200_000 * 10 ** usdcToken.decimals();
+		deal(address(usdcToken), alice, amountAlice);
+		vm.startPrank(daniel);
+
+		uint256 usdcAmount = 180_000 * 10 ** usdcToken.decimals();
+
+		stopLoss.addOrder{ value: 100 ether }(
+			StopLoss.OrderType.Limit,
+			address(wEth),
+			address(usdcToken),
+			uint128(100 ether),
+			uint128(usdcAmount),
+			0
+		);
+
+		vm.stopPrank();
+
+		vm.startPrank(alice);
+
+		usdcToken.approve(address(stopLoss), amountAlice);
+
+		stopLoss.addOrder(
+			StopLoss.OrderType.Limit,
+			address(usdcToken),
+			address(wEth),
+			uint128(amountAlice),
+			uint128(100 ether),
+			0
+		);
+
+		vm.stopPrank();
+
+		vm.startPrank(deployer);
+
+		stopLoss.executeOrder(address(usdcToken), address(wEth), 0, 0);
+
+		vm.stopPrank();
+
+		assertEq(usdcAmount, usdcToken.balanceOf(daniel));
+		assertEq(100 ether, wEth.balanceOf(alice));
+		assertEq(amountAlice - usdcAmount, usdcToken.balanceOf(alice));
+
+		(StopLoss.OrderData[] memory allOrders, ) = stopLoss.fetchPageOrders(
+			0,
+			100
+		);
+		assertEq(allOrders.length, 2);
+		assertEq(allOrders[0].order.sellAmount, 100 ether);
 		assertEq(allOrders[1].order.sellAmount, amountAlice);
 	}
 
