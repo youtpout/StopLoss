@@ -23,15 +23,19 @@ jobs:
 
       - name: npm install, build, and test
         run: |
-          npm install
-          npm run build --if-present
-          npm run test --if-present
+          yarn install --immutable
+          yarn next:build 
+
+      - name: tar file
+        run: |
+          cd packages/nextjs
+          tar -cvf /tmp/build.tar . 
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: node-app
-          path: .
+          path: /tmp/build.tar
 
   deploy:
     runs-on: ubuntu-latest
@@ -45,6 +49,12 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: node-app
+      
+      - name: Tar files
+        run: tar -xvf build.tar 
+
+      - name: Delete tar file
+        run: rm build.tar
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
